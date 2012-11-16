@@ -1,1 +1,1 @@
-This part of the wiki is for the history of programming. A factual description of all that has come to past.
+This part of the wiki is for the history of programming. (Encyclopedic)
