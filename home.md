@@ -1,4 +1,5 @@
-# Future of Programming - Jason Thane, Jason Strutz and Shane Brinkman-Davis
+# Future of Programming
+Jason Thane, Jason Strutz and Shane Brinkman-Davis
 This is a Wiki for the next stage of Dref/Flow/River etc.
 
 # Pages
