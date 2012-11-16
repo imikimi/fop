@@ -1,1 +1,3 @@
-# encyclopedia of computer science
+# Encyclopedia of Computer Science
+
+Wikipedia of Computer Science
