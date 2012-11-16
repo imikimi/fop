@@ -1,7 +1,7 @@
 # Inspiring Talks
 
 * [Alan Kay - Normal Considered Harmful](http://www.youtube.com/watch?v=FvmTSpJU-Xc&feature=youtu.be)
-* s
+* [Jim McCarthy at Missoula BarCamp 2012 - "Magnificence"](http://vimeo.com/40402597)
 
 # Parallel Processing Projects
 
