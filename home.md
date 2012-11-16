@@ -1,1 +1,3 @@
-[[history of programming]]
+# Pages
+* [[history of programming]]
+* [[encyclopedia of computer science]]
