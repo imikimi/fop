@@ -1,5 +1,8 @@
 # Pages
-* [[history of programming]]
-* [[encyclopedia of computer science]]
 * [[goals]]
 * [[values]]
+* [[misc links]]
+
+# More Pages
+* [[history of programming]]
+* [[encyclopedia of computer science]]
