@@ -1,6 +1,6 @@
 # Future of Programming
-Jason Thane, Jason Strutz and Shane Brinkman-Davis
-This is a Wiki for the next stage of Dref/Flow/River etc.
+This is a Wiki for the next stage of Dref/Flow/River etc. For internal user by Jason Thane, Jason Strutz and Shane Brinkman-Davis.
+
 
 # Pages
 * [[goals]]
