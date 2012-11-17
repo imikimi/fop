@@ -1,6 +1,4 @@
-# Quotes
-
-(many of these quotes are from: www.stcsig.org—pith.html <http://www.stcsig.org/usability/resources/pith.html> )
+# (many of these quotes are from: www.stcsig.org—pith.html <http://www.stcsig.org/usability/resources/pith.html> )
 
 ## POET
 
@@ -9,20 +7,20 @@
 ## Code
 
 > "functionality is an asset, but code is a liability"
-
-  * Ted Dziuba Thursday October 21 2010
-
-  * http://teddziuba.com/2010/10/taco-bell-programming.html <http://teddziuba.com/2010/10/taco-bell-programming.html>
+> - <cite>Ted Dziuba Thursday October 21 2010</cite>
+>  * http://teddziuba.com/2010/10/taco-bell-programming.html <http://teddziuba.com/2010/10/taco-bell-programming.html>
 
 ## New Ideas
 
-> 'An invasion of armies can be resisted, but not an idea whose time has come. -Victor Hugo (Histoire d'un Crime, 1852)
+> 'An invasion of armies can be resisted, but not an idea whose time has come. 
+> - <cite>Victor Hugo (Histoire d'un Crime, 1852)</cite>
 
 ## Quality
 
 > 'If you can't afford the time to do it right, how are you going to find the time to fix it up?' (unknown)
 
-> 'If you don't care about quality, you can meet any other requirement.' -Gerald M. Weinberg, 'The Zeroth Law of Software Engineering'
+> 'If you don't care about quality, you can meet any other requirement.' 
+> - <cite>Gerald M. Weinberg, 'The Zeroth Law of Software Engineering'</cite>
 
 > 'You can use an eraser on the drafting table or a sledge hammer on the construction site.' -Frank Lloyd Wright
 
