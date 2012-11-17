@@ -5,7 +5,7 @@ This is a Wiki for the next stage of Dref/Flow/River etc. For internal user by J
 # Pages
 * [[goals]]
 * [[values]]
-* [[misc links]]
+* [[links]]
 * [[quotes]]
 
 # More Pages
