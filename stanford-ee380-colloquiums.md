@@ -1,4 +1,4 @@
-# Computer Systems Colloquium (EE380)
+# Stanford Computer Systems Colloquium (EE380)
 
 ## ProgLang
 
