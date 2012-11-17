@@ -6,6 +6,7 @@ This is a Wiki for the next stage of Dref/Flow/River etc. For internal user by J
 * [[goals]]
 * [[values]]
 * [[links]]
+  * [[stanford-ee380-colloquiums]]
 * [[quotes]]
 
 # More Pages
