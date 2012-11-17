@@ -1,7 +1,7 @@
 # Future of Programming
 This is a Wiki for the next stage of Dref/Flow/River etc. For internal user by Jason Thane, Jason Strutz and Shane Brinkman-Davis.
 
-[[images/proglanghist.png]]
+[[proglanghist.png]]
 # Pages
 * [[goals]]
 * [[values]]
