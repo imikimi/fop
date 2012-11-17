@@ -8,6 +8,7 @@
 * Spring 2011: Future Proofing Scala (Martin Odersky)
 * Fall 2009: Self and Self: Whys and Wherefores (David Unger)
 * Fall 2008: Google App Engine: Run your web application on Google's Infrastructure (Guido van Rossum - inventor of Python - they get off-topic and talk python a bit in this pres)
+* Spring 2008: Dynamic Languages Strike Back (Steve Yegge)
 
 ## Runtimes / Compilers
 * Spring 2010: HipHop Compiler for PHP (Facebook)
@@ -24,6 +25,8 @@
 * Fall 2006: Computing on the GPU Geforce 8800 and Nvidia CUDA (Ian Buck)
 * Spring 2009: The Spiral Cache: A Self-Organizing Memory Architecture
 * Spring 2007: Stream Programming: Multicore made practical
+* Winter 2007: Computer Architecture is Back: The Berkley View of the Parallel Computing Research Landscape (Dave Patterson - 13 Dwarfs)
+* Winter 2008: Scalable Programming with CUDA on Manycore GPUs (John Nickolls)
 
 ## Other
 * Winter 2011: Parsing with Derivatives
