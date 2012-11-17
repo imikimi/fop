@@ -8,7 +8,7 @@
 
 ## Code
 
-> "functionality is an asset, but code is a liability"
+> "Functionality is an asset, but code is a liability."
 > -<cite>Ted Dziuba (October 21 2010)</cite>
 > <br>http://teddziuba.com/2010/10/taco-bell-programming.html <http://teddziuba.com/2010/10/taco-bell-programming.html>
 
