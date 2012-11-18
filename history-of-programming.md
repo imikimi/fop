@@ -1,1 +1,0 @@
-This part of the wiki is for the history of programming. (Encyclopedic)
