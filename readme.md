@@ -1,1 +1,1 @@
-Visit the Wiki: [[https://github.com/Imikimi-LLC/fop/wiki]]
+Visit the Wiki: https://github.com/Imikimi-LLC/fop/wiki
