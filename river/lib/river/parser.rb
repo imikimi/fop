@@ -67,7 +67,7 @@ class Parser < BabelBridge::Parser
     end
   end
 
-  rule :if_statement, "if", :statement, "then", :statements, :else_clause?, "end" do
+  rule :if_statement, "if", :statement, :end_statement, :statements, :else_clause?, "end" do
     def to_model; River::Model::IfStatement.new statement.to_model, statements.to_model, else_clause && else_clause.to_model; end
   end
   rule :else_clause, "else", :statements
@@ -87,15 +87,13 @@ class Parser < BabelBridge::Parser
   rule :operand, :self
   rule :operand, :identifier_get
   rule :operand, :member_get
-=begin
   rule :operand, :block
 
   rule :block, "do", :do_parameter_list?, :statements, "end" do
-    def to_model; River::Model::DoBlock.new identifier.to_sym, parameter_names, statements.to_model; end
+    def to_model; River::Model::DoBlock.new parameter_names, statements.to_model; end
 
-    def parameter_names; @parameter_names||=parameter_list ? parameter_list.parameter_names : []; end
+    def parameter_names; @parameter_names||=do_parameter_list ? do_parameter_list.parameter_names : []; end
   end
-=end
 
   rule :do_parameter_list, "|", many(:identifier, ","), "|" do
     def parameter_names
@@ -135,7 +133,7 @@ class Parser < BabelBridge::Parser
     def to_model; statement.collect {|s|s.to_model}; end
   end
 
-  rule :keyword, /(root|do|end|if|while|then|in)[^a-zA-Z0-9_]/
+  rule :keyword, /(root|do|end|if|while|in|else)[^a-zA-Z0-9_]/
 
   rule :member_identifier, /@[_a-zA-Z][_a-zA-Z0-9]*/
   rule :identifier, /[_a-zA-Z][_a-zA-Z0-9]*/

@@ -1,3 +1,25 @@
-2012-11-08 TODO: Need to add:
-  Ability to execute code in the context of a specific object
-    in object do ... end
+Core features
+
+  include module
+  ! prefix operator
+  "||="" operators
+  short circuit "&&, ||, etc"
+  obj."method=" methods
+  unless
+  return
+  break
+  next
+  do_this "unless/if" xyz
+  call "initialize" on new
+  comments
+
+Core object types
+
+  String
+  Array
+  Hash
+
+Done
+
+  nested scopes
+  closures

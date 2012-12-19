@@ -28,6 +28,7 @@ class MethodInvocation
   def evaluate(runtime)
     param_evals = evaluated_parameters runtime
     obj_val = evaluated_object runtime
+    raise "invoked method #{identifier.inspect} on nil" unless obj_val
     case identifier
     when :+, :*, :/, :- then validate_parameter_length(1);obj_val.send(identifier, param_evals[0])
     when :<, :<=, :>, :>=, :== then validate_parameter_length(1);obj_val.send(identifier, param_evals[0]) ? 1 : nil
@@ -90,8 +91,8 @@ class IdentifierGet
 
   def evaluate(runtime)
     stack_frame = runtime.current_stack_frame
-    context = stack_frame[:"@context"]
-    if stack_frame.has_key?(identifier)
+    context = stack_frame.context
+    if stack_frame.has_local?(identifier)
       stack_frame[identifier]
     else
       context.invoke runtime, identifier, evaluated_parameters(runtime)
