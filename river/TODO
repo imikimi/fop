@@ -2,7 +2,7 @@ Core features
 
   include module
   ! prefix operator
-  "||="" operators
+  "||=" operators
   short circuit "&&, ||, etc"
   obj."method=" methods
   unless
@@ -12,6 +12,8 @@ Core features
   do_this "unless/if" xyz
   call "initialize" on new
   comments
+  case
+  elsif (?)
 
 Core object types
 
