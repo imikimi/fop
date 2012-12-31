@@ -6,7 +6,7 @@ class MethodInvocation
   attr_accessor :object
   attr_accessor :parameters
 
-  def initialize(identifier, object, parameters)
+  def initialize(object, identifier, parameters)
     @identifier = identifier
     @object = object
     @parameters = parameters || []
@@ -17,7 +17,7 @@ class MethodInvocation
   end
 
   def evaluated_object(runtime)
-    object.evaluate runtime
+    @last_evaluated_object = object.evaluate(runtime).tap {|obj_val| raise "invoked method #{identifier.inspect} on nil" unless obj_val}
   end
 
   def evaluated_parameters(runtime)
@@ -38,6 +38,22 @@ class MethodInvocation
 
   def evaluate_method(runtime,obj_val,param_evals)
     obj_val.invoke runtime, identifier, param_evals
+  end
+end
+
+class AssignmentMethodInvocation < MethodInvocation
+  attr_accessor :assignment_operator
+
+  def initialize(object, identifier, assignment_operator, value_expression)
+    @assignment_operator = assignment_operator
+    @identifier = "#{identifier}=".to_sym
+    @object = object
+    @parameters = [value_expression]
+  end
+
+  def evaluate(runtime)
+    super
+    @last_evaluated_object
   end
 end
 

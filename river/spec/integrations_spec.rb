@@ -1,23 +1,8 @@
-require File.join(File.dirname(__FILE__),"..","lib","river")
+require File.join(File.dirname(__FILE__),"spec_helper")
 
 describe River::Parser do
 
-  before :each do
-    @parser = nil
-  end
-
-  def parser
-    @parser ||= River::Parser.new
-  end
-
-  def test_parse(program)
-    res = parser.parse(program)
-    if res
-      res.evaluate
-    else
-      puts parser.parser_failure_info :verbose => true
-    end
-  end
+  include RiverSpecHelper
 
   it "test passing blocks in as parameters" do
     test_parse(<<ENDCODE).should == 120

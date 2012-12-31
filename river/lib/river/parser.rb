@@ -20,29 +20,44 @@ class Parser < BabelBridge::Parser
     end
   end
 
-  rule :statements, many?(:not_end_statement, :end_statement), match?(:end_statement) do
-    def to_model; River::Model::StatementBlock.new not_end_statement ? not_end_statement.collect{|s|s.to_model} : []; end
+  rule :statements, many?(:statement, :end_statement), match?(:end_statement) do
+    def to_model; River::Model::StatementBlock.new statement ? statement.collect{|s|s.to_model} : []; end
   end
 
-  rule :not_end_statement, dont.match("end"), :statement
+  #rule :not_end_statement, dont.match("end"), :statement
 
 
   binary_operators_rule :statement, :method_invocation_chain, [[:/, :*], [:+, :-], [:<, :<=, :>, :>=, :==]] do
     def to_model
-      River::Model::MethodInvocation.new operator, left.to_model, [right.to_model]
+      River::Model::MethodInvocation.new left.to_model, operator, [right.to_model]
     end
   end
 
-  rule :method_invocation_chain, :operand, ".", many(:identifier_get, ".") do
+  # if no other statements match, we can match nothing which returns nil
+  rule :statement, could.match(";") do
+    def to_model; River::Model::Constant.new nil; end
+  end
+
+  rule :method_invocation_chain, :operand, ".", many(:method_invocation, ".") do
     def to_model
-      invocations = identifier_get
-      ret = operand.to_model
-      while invocations.length > 0
-        i = invocations[0]
-        invocations = invocations[1..-1]
-        ret = River::Model::MethodInvocation.new i.identifier.to_sym, ret, i.parameters_model
+      method_invocation.inject(operand.to_model) do |expression_so_far, invocation|
+        invocation.to_model expression_so_far
       end
-      ret
+    end
+  end
+
+  rule :method_invocation, :identifier, :assignment_operator, :statement do
+    def to_model(object_expression)
+      River::Model::AssignmentMethodInvocation.new object_expression, identifier.to_sym, assignment_operator.to_sym, statement.to_model
+    end
+  end
+
+  rule :assignment_operator, "="
+
+  rule :method_invocation, :identifier, :parameters? do
+    def parameters_model; parameters && parameters.to_model; end
+    def to_model(object_expression)
+      River::Model::MethodInvocation.new object_expression, identifier.to_sym, parameters_model
     end
   end
 
@@ -55,15 +70,15 @@ class Parser < BabelBridge::Parser
   rule :operand, :while_statement
   rule :operand, :context_statement
 
-  rule :function_definition, "def", :identifier, :parameter_list?, :end_statement, :statements, "end" do
-    def to_model; River::Model::FunctionDefinition.new identifier.to_sym, parameter_names, statements.to_model; end
+  rule :function_definition, "def", :def_identifier, :parameter_list?, :statements, "end" do
+    def to_model; River::Model::FunctionDefinition.new def_identifier.to_sym, parameter_names, statements.to_model; end
 
     def parameter_names; @parameter_names||=parameter_list ? parameter_list.parameter_names : []; end
   end
 
-  rule :parameter_list, "(", many(:identifier, ","), ")" do
+  rule :parameter_list, "(", many?(:identifier, ","), ")" do
     def parameter_names
-      @parameter_names ||= identifier.collect{|a|a.to_sym}
+      @parameter_names ||= identifier ? identifier.collect{|a|a.to_sym} : []
     end
   end
 
@@ -133,10 +148,11 @@ class Parser < BabelBridge::Parser
     def to_model; statement.collect {|s|s.to_model}; end
   end
 
-  rule :keyword, /(root|do|end|if|while|in|else)[^a-zA-Z0-9_]/
+  rule :keyword, /(root|do|end|if|while|in|else|def)\b/
 
-  rule :member_identifier, /@[_a-zA-Z][_a-zA-Z0-9]*/
-  rule :identifier, /[_a-zA-Z][_a-zA-Z0-9]*/
+  rule :member_identifier, /@[_a-z][_a-z0-9]*/i
+  rule :identifier, /[_a-z][_a-z0-9]*/i
+  rule :def_identifier, /[_a-z][_a-z0-9]*[=?!]?/i
   rule :literal, :nil
   rule :literal, :root_object
   rule :literal, :integer

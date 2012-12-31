@@ -1,6 +1,12 @@
 Core features
 
-  include module
+  include module (multiple includes)
+  comments
+  String
+  Array
+  Hash
+
+Med Priority
   ! prefix operator
   "||=" operators
   short circuit "&&, ||, etc"
@@ -11,15 +17,11 @@ Core features
   next
   do_this "unless/if" xyz
   call "initialize" on new
-  comments
   case
   elsif (?)
 
 Core object types
 
-  String
-  Array
-  Hash
 
 Done
 
