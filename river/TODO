@@ -1,7 +1,7 @@
 Core features
 
   include module (multiple includes)
-  comments
+  Comments
   String
   Array
   Hash
@@ -10,7 +10,6 @@ Med Priority
   ! prefix operator
   "||=" operators
   short circuit "&&, ||, etc"
-  obj."method=" methods
   unless
   return
   break
@@ -27,3 +26,4 @@ Done
 
   nested scopes
   closures
+  obj."method=" - assignment methods
