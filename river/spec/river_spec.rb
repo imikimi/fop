@@ -78,6 +78,10 @@ describe "methods" do
     test_parse("def mulsq(x,y); x*y*y end;mulsq(2,3)").should==18
   end
 
+  it "def with parameters - omitted parens" do
+    test_parse("def mulsq(x,y) x*y*y end;mulsq\n2,3").should==18
+  end
+
   it "def func should have local scope for its variables" do
     test_parse("t=2;def doit(t); t*3 end;t*doit(5)*t").should==60
     test_parse("t=2;def doit(x); t=3;t*x end;t*doit(5)*t").should==60
