@@ -31,6 +31,10 @@ class FunctionDefinition < ModelNode
     "def #{name}#{parameters_code}\n#{indent body.to_code}\nend"
   end
 
+  def to_hash
+    super.merge method_name:name.to_s, parameter_names:parameter_names.collect(&:to_s), body:body.to_hash
+  end
+
   def initialize(name, parameter_names, body, options = {})
     super options
     @name = name
@@ -60,6 +64,10 @@ class ContextStatement < ModelNode
     "in #{context_statement.to_code}\n#{indent body.to_code}\nend"
   end
 
+  def to_hash
+    super.merge context_statement:context_statement.to_hash, body:body.to_hash
+  end
+
   def initialize(context_statement, body, options = {})
     super options
     @context_statement = context_statement
@@ -83,6 +91,10 @@ class StatementBlock < ModelNode
     @statements = statements
   end
 
+  def to_hash
+    super.merge statements:statements.collect(&:to_hash)
+  end
+
   def evaluate(runtime)
     ret = nil
     statements.each do |s|
@@ -102,6 +114,10 @@ class DoBlock < ModelNode
   def to_code
     parameters_code = parameter_names && parameter_names.length>0 ? "|#{parameter_names.join(', ')}|" : ""
     "do #{parameters_code}\n#{indent body.to_code}\nend"
+  end
+
+  def to_hash
+    super.merge parameter_names:parameter_names.collect(&:to_s), body:body.to_hash
   end
 
   def initialize(parameter_names, body, options = {})

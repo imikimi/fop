@@ -8,6 +8,8 @@ else
 end
 puts "Babel-Bridge Version: #{BabelBridge::VERSION}"
 
+require "json"
+
 %w{
   version
   model

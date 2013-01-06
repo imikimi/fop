@@ -16,6 +16,14 @@ class ModelNode
     "### #{self.class} has not implemented #to_code"
   end
 
+  def to_json
+    to_hash.to_json
+  end
+
+  def to_hash
+    {class_name:self.class.to_s.split("::")[-1]}
+  end
+
   def parameters_to_code(parameters = self.parameters)
     (parameters && parameters.length>0 ? "(#{parameters.collect(&:to_code).join ', '})" : "")
   end
@@ -37,6 +45,10 @@ class MethodInvocation < ModelNode
     else
       "#{object.to_code}.#{identifier}#{parameters_to_code}"
     end
+  end
+
+  def to_hash
+    super.merge method_name:identifier.to_s, parameters:parameters.collect(&:to_hash)
   end
 
   def operator_method?
@@ -106,6 +118,10 @@ class IfStatement < ModelNode
     "if #{test_statement.to_code}\n#{indent body.to_code}#{else_clause && "\nelse\n#{indent else_clause.to_code}"}\nend"
   end
 
+  def to_hash
+    super.merge test_statement:test_statement.to_hash, body:body.to_hash, else_clause:else_clause && else_clause.to_hash
+  end
+
   def initialize(test_statement, body, else_clause, options = {})
     super options
     @test_statement = test_statement
@@ -130,6 +146,10 @@ class WhileStatement < ModelNode
     "while #{test_statement.to_code}\n#{indent body.to_code}\nend"
   end
 
+  def to_hash
+    super.merge test_statement:test_statement.to_hash, body:body.to_hash
+  end
+
   def initialize(test_statement, body, options = {})
     super options
     @test_statement = test_statement
@@ -150,6 +170,10 @@ class IdentifierGet < ModelNode
 
   def to_code
     identifier.to_s + parameters_to_code
+  end
+
+  def to_hash
+    super.merge identifier:identifier.to_s, parameters:parameters&&parameters.collect(&:to_hash)
   end
 
   def initialize(identifier,parameters, options = {})
@@ -178,6 +202,10 @@ class MemberGet < ModelNode
 
   def to_code
     identifier.to_s
+  end
+
+  def to_hash
+    super.merge identifier:identifier.to_s
   end
 
   def initialize(identifier, options = {})
@@ -210,6 +238,10 @@ class Setter < ModelNode
     "#{identifier} = #{statement.to_code}"
   end
 
+  def to_hash
+    super.merge identifier:identifier.to_s, statement:statement.to_hash
+  end
+
   def initialize(identifier, statement, options={})
     super options
     @identifier = identifier
@@ -235,6 +267,10 @@ class Constant < ModelNode
 
   def to_code
     value.inspect
+  end
+
+  def to_hash
+    super.merge value:value
   end
 
   def initialize(value, options = {})
