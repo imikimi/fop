@@ -15,10 +15,15 @@ module RiverSpecHelper
 
   def test_parse(program)
     res = parser.parse(program)
-    if res
-      res.evaluate
-    else
+    res || begin
       puts parser.parser_failure_info :verbose => true
+      raise "parser failure"
+    end
+  end
+
+  def test_eval(program,equal_to=nil)
+    test_parse(program).evaluate.tap do |res|
+      equal_to.should == res if equal_to
     end
   end
 end

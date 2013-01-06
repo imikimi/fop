@@ -57,12 +57,12 @@ class Object
     "<#{self.class}:#{self.object_id}>"
   end
 
-  def invoke(runtime, method_name, params)
+  def invoke(runtime, method_name, params, invoking_model)
     method = find_method method_name
     if method
       method.call runtime, self, params
     else
-      raise "method #{method_name.inspect} not found on object #{inspect} methods=#{mmethods.keys.inspect}"
+      raise "method #{method_name.inspect} not found on object #{inspect} methods=#{mmethods.keys.inspect} (line #{invoking_model.source_line}, column #{invoking_model.source_column})"
     end
   end
 end

@@ -5,7 +5,7 @@ describe River::Parser do
   include RiverSpecHelper
 
   it "test passing blocks in as parameters" do
-    test_parse(<<ENDCODE).should == 120
+    test_eval(<<ENDCODE).should == 120
       def run_twice_and_sum(block)
         block.call + block.call
       end
@@ -17,7 +17,7 @@ ENDCODE
   end
 
   it "test passing two blocks in as parameters" do
-    test_parse(<<ENDCODE).should == 120
+    test_eval(<<ENDCODE).should == 120
       def run_and_sum(block1, block2)
         block1.call + block2.call
       end
@@ -31,7 +31,7 @@ ENDCODE
   end
 
   it "complex test" do
-    test_parse(<<ENDCODE).should == 120
+    test_eval(<<ENDCODE).should == 120
       point = new
       in point
         @x = @y = 0
@@ -49,7 +49,7 @@ ENDCODE
   end
 
   it "linked list test" do
-    test_parse(<<ENDCODE).should == 120
+    code = (<<ENDCODE)
       @linked_list = new
       @linked_list_node = new
 
@@ -99,5 +99,7 @@ ENDCODE
       end
       product
 ENDCODE
+    #puts parser.parse(code).to_model.to_code
+    test_eval(code).should == 120
   end
 end

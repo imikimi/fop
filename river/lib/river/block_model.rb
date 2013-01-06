@@ -22,11 +22,17 @@ module BlockTools
   end
 end
 
-class FunctionDefinition
+class FunctionDefinition < ModelNode
   include BlockTools
   attr_accessor :name
 
-  def initialize(name, parameter_names, body)
+  def to_code
+    parameters_code = parameter_names && parameter_names.length>0 ? "(#{parameter_names.join(', ')})" : ""
+    "def #{name}#{parameters_code}\n#{indent body.to_code}\nend"
+  end
+
+  def initialize(name, parameter_names, body, options = {})
+    super options
     @name = name
     @parameter_names = parameter_names
     @body = body
@@ -44,13 +50,18 @@ end
 
 # Execute "body" in a context.
 # NOTE: context == the "self" pointer
-class ContextStatement
+class ContextStatement < ModelNode
   include BlockTools
 
   # context_statement returns the context in which the body will be executed
   attr_accessor :context_statement
 
-  def initialize(context_statement, body)
+  def to_code
+    "in #{context_statement.to_code}\n#{indent body.to_code}\nend"
+  end
+
+  def initialize(context_statement, body, options = {})
+    super options
     @context_statement = context_statement
     @body = body
   end
@@ -64,10 +75,11 @@ class ContextStatement
   end
 end
 
-class StatementBlock
+class StatementBlock < ModelNode
   attr_accessor :statements
 
-  def initialize(statements)
+  def initialize(statements, options = {})
+    super options
     @statements = statements
   end
 
@@ -78,11 +90,22 @@ class StatementBlock
     end
     ret
   end
+
+  def to_code
+    statements.collect(&:to_code).join "\n"
+  end
 end
 
-class DoBlock
+class DoBlock < ModelNode
   include BlockTools
-  def initialize(parameter_names, body)
+
+  def to_code
+    parameters_code = parameter_names && parameter_names.length>0 ? "|#{parameter_names.join(', ')}|" : ""
+    "do #{parameters_code}\n#{indent body.to_code}\nend"
+  end
+
+  def initialize(parameter_names, body, options = {})
+    super options
     @parameter_names = parameter_names
     @body = body
   end

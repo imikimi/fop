@@ -10,8 +10,8 @@ puts "Babel-Bridge Version: #{BabelBridge::VERSION}"
 
 %w{
   version
-  block_model
   model
+  block_model
   parser
   runtime
 }.each do |src|
