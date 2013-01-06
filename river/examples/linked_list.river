@@ -1,0 +1,48 @@
+@linked_list = new
+@linked_list_node = new
+
+in root
+  def linked_list; @linked_list; end
+  def linked_list_node; @linked_list_node; end
+end
+
+in @linked_list_node
+  def next; @next end
+  def value; @value end
+  def set_next(n); @next = n end
+  def set_value(v); @value = v end
+end
+
+in @linked_list
+  def head; @head end
+  def tail; @tail end
+
+  def add(value)
+    if @tail
+      @tail = @tail.set_next root.linked_list_node.new
+    else
+      @head = @tail = root.linked_list_node.new
+    end
+    @tail.set_value value
+  end
+
+  def each(block)
+    current = @head
+    while current
+      block.call current.value
+      current = current.next
+    end
+    self
+  end
+end
+
+my_ll = root.linked_list.new
+my_ll.add 2
+my_ll.add 5
+my_ll.add 12
+
+product = 1
+my_ll.each do |el|
+  product = product * el
+end
+product
