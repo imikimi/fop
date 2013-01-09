@@ -1,19 +1,17 @@
 @linked_list = new
 @linked_list_node = new
 
-in root
-  def linked_list; @linked_list; end
-  def linked_list_node; @linked_list_node; end
-end
+def linked_list; @linked_list; end
+def linked_list_node; @linked_list_node; end
 
-in @linked_list_node
+@linked_list_node.eval do
   def next; @next end
   def value; @value end
   def set_next(n); @next = n end
   def set_value(v); @value = v end
 end
 
-in @linked_list
+@linked_list.eval do
   def head; @head end
   def tail; @tail end
 

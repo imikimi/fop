@@ -28,7 +28,9 @@ class FunctionDefinition < ModelNode
 
   def to_code
     parameters_code = parameter_names && parameter_names.length>0 ? "(#{parameter_names.join(', ')})" : ""
-    "def #{name}#{parameters_code}\n#{indent body.to_code}\nend"
+    body_code = body.to_code
+    code = "def #{name}#{parameters_code}\n#{indent body.to_code}\nend"
+    one_liner(code) || code
   end
 
   def to_hash
@@ -40,12 +42,13 @@ class FunctionDefinition < ModelNode
     @name = name
     @parameter_names = parameter_names
     @body = body
+    children body
   end
 
   def evaluate(runtime_now)
-    runtime_now.context.set_method name, (lambda do |runtime_later,context,params|
+    runtime_now.context.set_method(name) do |runtime_later,context,params|
       invoke(runtime_later,context,params)
-    end)
+    end
     1 # return true
   end
 
@@ -58,6 +61,11 @@ class StatementBlock < ModelNode
   def initialize(statements, options = {})
     super options
     @statements = statements
+    children statements
+  end
+
+  def is_part_of_message_parameter
+    false
   end
 
   def to_hash
@@ -81,8 +89,8 @@ class DoBlock < ModelNode
   include BlockTools
 
   def to_code
-    parameters_code = parameter_names && parameter_names.length>0 ? "|#{parameter_names.join(', ')}|" : ""
-    "do #{parameters_code}\n#{indent body.to_code}\nend"
+    parameters_code = parameter_names && parameter_names.length>0 && "|#{parameter_names.join(', ')}|"
+    "do#{parameters_code ? " "+parameters_code : ""}\n#{indent body.to_code}\nend"
   end
 
   def to_hash
@@ -93,14 +101,15 @@ class DoBlock < ModelNode
     super options
     @parameter_names = parameter_names
     @body = body
+    children body
   end
 
   def evaluate(runtime)
     closure = runtime.current_stack_frame
     runtime.root.new.tap do |functor|
-      functor.set_method(:call, lambda do |runtime_later,context,params|
+      functor.set_method(:call) do |runtime_later,context,params|
         invoke runtime_later, closure.context, params, closure
-      end)
+      end
     end
   end
 end

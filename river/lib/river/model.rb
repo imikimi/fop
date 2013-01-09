@@ -2,10 +2,21 @@ module River
 module Model
 
 class ModelNode
-  attr_accessor :parse_node
+  attr_accessor :parse_node, :receives_message, :is_part_of_message_parameter
+  attr_accessor :children, :parent
 
   def initialize(options={})
     @parse_node = options[:parse_node]
+  end
+
+  def children(*args)
+    @children ||= begin
+      args.flatten.compact.each {|child|child.parent = self}
+    end
+  end
+
+  def is_part_of_message_parameter
+    @is_part_of_message_parameter || (parent && parent.is_part_of_message_parameter)
   end
 
   def source_line; parse_node.line; end
@@ -14,6 +25,17 @@ class ModelNode
   # output parsable source-code
   def to_code
     "### #{self.class} has not implemented #to_code"
+  end
+
+  def to_one_liner(code)
+    code.
+      gsub(/[ \t\n]+end\b/,' end').
+      gsub(/\n[ \t]*/,'; ')
+  end
+
+  def one_liner(code)
+    max_oneliner_length = 80
+    !code[/#[^\n]*/] && (one_liner=to_one_liner(code)).length <= max_oneliner_length && one_liner
   end
 
   def to_json
@@ -25,7 +47,12 @@ class ModelNode
   end
 
   def parameters_to_code(parameters = self.parameters)
-    (parameters && parameters.length>0 ? "(#{parameters.collect(&:to_code).join ', '})" : "")
+    if parameters && parameters.length>0
+      ret = parameters.collect(&:to_code).join ', '
+      receives_message || is_part_of_message_parameter ? "(#{ret})" : " #{ret}"
+    else
+      ""
+    end
   end
 
   def indent(string, indent = "  ")
@@ -61,6 +88,8 @@ class MethodInvocation < ModelNode
     @identifier = identifier
     @object = object
     @parameters = parameters || []
+    children(object,parameters)
+    parameters && parameters.each {|p| p.is_part_of_message_parameter=true}
   end
 
   def validate_parameter_length(required_length)
@@ -127,6 +156,7 @@ class IfStatement < ModelNode
     @test_statement = test_statement
     @body = body
     @else_clause = else_clause
+    children(test_statement, body, else_clause)
   end
 
   def evaluate(runtime)
@@ -154,6 +184,7 @@ class WhileStatement < ModelNode
     super options
     @test_statement = test_statement
     @body = body
+    children  test_statement, body
   end
 
   def evaluate(runtime)
@@ -180,6 +211,8 @@ class IdentifierGet < ModelNode
     super options
     @identifier = identifier
     @parameters = parameters
+    children parameters
+    parameters && parameters.each {|p| p.is_part_of_message_parameter=true}
   end
 
   def evaluated_parameters(runtime)
@@ -246,6 +279,7 @@ class Setter < ModelNode
     super options
     @identifier = identifier
     @statement = statement
+    children statement
   end
 end
 
@@ -280,6 +314,27 @@ class Constant < ModelNode
 
   def evaluate(runtime)
     value
+  end
+end
+
+class Symbol < ModelNode
+  attr_accessor :symbol
+
+  def to_code
+    ":#{symbol}"
+  end
+
+  def to_hash
+    super.merge symbol:symbol
+  end
+
+  def initialize(symbol, options = {})
+    super options
+    @symbol = symbol
+  end
+
+  def evaluate(runtime)
+    runtime.get_symbol symbol
   end
 end
 

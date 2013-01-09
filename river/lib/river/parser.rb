@@ -33,6 +33,7 @@ class Parser < BabelBridge::Parser
   rule :method_invocation_chain, :operand, ".", many(:method_invocation, "."), :delimiter => :space? do
     def to_model
       method_invocation.inject(operand.to_model) do |expression_so_far, invocation|
+        expression_so_far.receives_message = true
         invocation.to_model expression_so_far
       end
     end
@@ -145,6 +146,7 @@ class Parser < BabelBridge::Parser
   rule :literal, :nil
   rule :literal, :root_object
   rule :literal, :integer
+  rule :literal, :symbol
 
   rule :space, many(:space_or_comment), :delimiter => //
   rule :whitespace, many(:whitespace_or_comment), :delimiter => //
@@ -153,6 +155,10 @@ class Parser < BabelBridge::Parser
   rule :whitespace_or_comment, /\s+/
   rule :whitespace_or_comment, :comment
   rule :comment, /#[^\n]*/
+
+  rule :symbol, ":", :identifier, :delimiter => // do
+    def to_model; River::Model::Symbol.new identifier.to_sym, :parse_node => self; end
+  end
 
   rule :root_object, "root" do
     def to_model; River::Model::RootObject.new :parse_node => self; end

@@ -35,10 +35,16 @@ ENDBANNER
     src = File.read file
     parsed = parser.parse src
 
+    unless parsed
+      puts "Parsing failed on file: #{file}"
+      puts parser.parser_failure_info
+      exit 1
+    end
+
     model = parsed.to_model
 
     if options[:transcode]
-      puts model.to_s
+      puts model.to_code
     elsif options[:json]
       puts JSON.pretty_generate(model.to_hash)
     else

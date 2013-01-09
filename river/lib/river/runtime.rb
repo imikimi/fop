@@ -48,10 +48,11 @@ class Stack
     @top_stack_frame ||= StackFrame.new
   end
 
-  attr_reader :root
+  attr_reader :root, :symbols
 
   def initialize
     @root = top_stack_frame.context
+    @symbols = {}
   end
 
   # the stack consists of an array of hashs
@@ -75,6 +76,10 @@ class Stack
     yield
   ensure
     pop_stack_frame
+  end
+
+  def get_symbol(symbol)
+    symbols||=root.new :symbol
   end
 
   def in_context(new_context)

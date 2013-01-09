@@ -7,13 +7,17 @@ class Object
   class << self
     def new_root_object
       Object.new.tap do |o|
-        o.set_method :new, lambda {|runtime,context,params| context.new}
-        o.set_method :debug, lambda {|runtime,context,params| puts params.collect{|a| a.inspect}.join(', ')} # temporary implementation for debugging
-        o.set_method :eval, (lambda do |runtime,context,params|
+        o.set_method(:new) {|runtime,context,params| context.new}
+        o.set_method(:debug) {|runtime,context,params| puts params.collect{|a| a.inspect}.join(', ')} # temporary implementation for debugging
+        o.set_method(:eval) do |runtime,context,params|
           River::Runtime::Tests.validate_parameter_length(params,1)
           block = params[0]
           block.invoke_in context, runtime, :call, [], nil
-        end)
+        end
+        o.set_method(:set_method) do |runtime,context,params|
+          River::Runtime::Tests.validate_parameter_length(params,2)
+          contex.set_method(params[0].symbol, params[1])
+        end
       end
     end
   end
@@ -22,8 +26,13 @@ class Object
     self.parent=_parent
   end
 
-  def new
-    Runtime::Object.new self
+  def new(special_type = nil)
+    case special_type
+    when ::Symbol then Runtime::Symbol.new self, Symbol
+    when nil then Runtime::Object.new self
+    else
+      raise "hell"
+    end
   end
 
   def ancestor?(k)
@@ -43,8 +52,8 @@ class Object
   def mmethods; @methods||={}; end
   def mmembers; @members||={}; end
 
-  def set_method(method_name, function_def)
-    mmethods[method_name] = function_def
+  def set_method(method_name, river_block = nil, &block)
+    mmethods[method_name] = river_block || block
   end
 
   # return which object is the parent of self
@@ -73,6 +82,14 @@ class Object
     else
       raise "method #{method_name.inspect} not found on object #{context.inspect} methods=#{mmethods.keys.inspect} (line #{invoking_model && invoking_model.source_line}, column #{invoking_model && invoking_model.source_column})"
     end
+  end
+end
+
+class Symbol < Object
+  attr_accessor :symbol
+  def initialize(parent, symbol)
+    super parent
+    @symbol = symbol
   end
 end
 
