@@ -3,8 +3,19 @@ module Runtime
 
 class Tests
   class << self
-    def validate_parameter_length(parameters, expected_length)
-      raise "Wrong number of parametrs. Expected #{required_length}, got #{parameters.length}." unless parameters.length==expected_length
+    def validate_parameters(parameters, length_or_types, info='')
+      length = case length_or_types
+      when Integer then length_or_types
+      when Array then
+        types = length_or_types
+        types.length
+      end
+      raise "Wrong number of parameters. Expected #{length}, got #{parameters.length}. #{info}" unless parameters.length == length
+      types && types.each_with_index do |klass, i|
+        next if klass==true
+        raise "Wrong parameter type for parameter #{i+1}/#{types.length}. Expected #{klass}, got #{parameters[i].class}. #{info}" unless klass == parameters[i].class
+      end
+      parameters
     end
   end
 end

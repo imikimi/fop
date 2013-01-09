@@ -92,8 +92,8 @@ class MethodInvocation < ModelNode
     parameters && parameters.each {|p| p.is_part_of_message_parameter=true}
   end
 
-  def validate_parameter_length(required_length)
-    River::Runtime::Tests.validate_parameter_length(parameters,required_length)
+  def validate_parameters(required_length)
+    River::Runtime::Tests.validate_parameters(parameters,required_length)
   end
 
   def evaluated_object(runtime)
@@ -110,8 +110,8 @@ class MethodInvocation < ModelNode
     obj_val = evaluated_object runtime
     raise "invoked method #{identifier.inspect} on nil" unless obj_val
     case identifier
-    when :+, :*, :/, :- then validate_parameter_length(1);obj_val.send(identifier, param_evals[0])
-    when :<, :<=, :>, :>=, :== then validate_parameter_length(1);obj_val.send(identifier, param_evals[0]) ? 1 : nil
+    when :+, :*, :/, :- then validate_parameters(1);obj_val.send(identifier, param_evals[0])
+    when :<, :<=, :>, :>=, :== then validate_parameters(1);obj_val.send(identifier, param_evals[0]) ? 1 : nil
     else evaluate_method(runtime,obj_val,param_evals)
     end
   end
@@ -234,7 +234,7 @@ class MemberGet < ModelNode
   attr_accessor :identifier
 
   def to_code
-    identifier.to_s
+    "@#{identifier}"
   end
 
   def to_hash
@@ -247,7 +247,7 @@ class MemberGet < ModelNode
   end
 
   def evaluate(runtime)
-    runtime.context.mmembers[identifier]
+    runtime.context.get_member identifier
   end
 end
 
@@ -284,8 +284,12 @@ class Setter < ModelNode
 end
 
 class MemberSet < Setter
+  def to_code
+    "@" + super
+  end
+
   def evaluate(runtime)
-    runtime.context.mmembers[identifier] = statement.evaluate(runtime)
+    runtime.context.set_member identifier, statement.evaluate(runtime)
   end
 end
 

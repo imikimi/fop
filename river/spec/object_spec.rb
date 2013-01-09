@@ -43,6 +43,41 @@ ENDCODE
     test_eval("obj=new;obj.eval do def foo; 123 end end;obj.foo").should==123
   end
 
+  it "set_method should work" do
+    test_eval(<<ENDCODE).should == 120
+      @foo = 120
+      root.set_method :bar, do
+        @foo
+      end
+      root.bar
+ENDCODE
+  end
+
+  it "get_method should work" do
+    test_eval(<<ENDCODE).should == 120
+      root.eval do
+        def foo
+          120
+        end
+      end
+      root.get_method(:foo).call
+ENDCODE
+  end
+
+  it "set_member should work" do
+    test_eval(<<ENDCODE).should == 120
+      root.set_member :foo, 120
+      @foo
+ENDCODE
+  end
+
+  it "get_member should work" do
+    test_eval(<<ENDCODE).should == 120
+      @foo = 120
+      root.get_member :foo
+ENDCODE
+  end
+
 end
 end
 end

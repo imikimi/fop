@@ -10,13 +10,30 @@ class Object
         o.set_method(:new) {|runtime,context,params| context.new}
         o.set_method(:debug) {|runtime,context,params| puts params.collect{|a| a.inspect}.join(', ')} # temporary implementation for debugging
         o.set_method(:eval) do |runtime,context,params|
-          River::Runtime::Tests.validate_parameter_length(params,1)
+          River::Runtime::Tests.validate_parameters(params,1)
           block = params[0]
           block.invoke_in context, runtime, :call, [], nil
         end
+
         o.set_method(:set_method) do |runtime,context,params|
-          River::Runtime::Tests.validate_parameter_length(params,2)
-          contex.set_method(params[0].symbol, params[1])
+          sym, proc = River::Runtime::Tests.validate_parameters params, [Runtime::Symbol, Runtime::Proc], "method = set_method"
+          context.set_method sym.ruby_symbol, proc
+        end
+
+        o.set_method(:get_method) do |runtime,context,params|
+          River::Runtime::Tests.validate_parameters params, [Runtime::Symbol], "method = get_method"
+          method = context.find_method params[0].ruby_symbol
+          method.kind_of?(Runtime::Proc) ? method : nil   # currently we allow procs written in pure ruby (like this one) as well as river procs; only return river procs
+        end
+
+        o.set_method(:set_member) do |runtime,context,params|
+          sym, obj = River::Runtime::Tests.validate_parameters params, [Runtime::Symbol, true], "method = set_member"
+          context.set_member sym.ruby_symbol, obj
+        end
+
+        o.set_method(:get_member) do |runtime,context,params|
+          River::Runtime::Tests.validate_parameters params, [Runtime::Symbol], "method = get_member"
+          context.get_member params[0].ruby_symbol
         end
       end
     end
@@ -53,6 +70,14 @@ class Object
   def mmethods; @methods||={}; end
   def mmembers; @members||={}; end
 
+  def set_member(member_name, value)
+    mmembers[member_name] = value
+  end
+
+  def get_member(member_name)
+    mmembers[member_name]
+  end
+
   def set_method(method_name, river_block = nil, &block)
     mmethods[method_name] = river_block || block
   end
@@ -87,10 +112,10 @@ class Object
 end
 
 class Symbol < Object
-  attr_accessor :symbol
-  def initialize(parent, symbol)
+  attr_accessor :ruby_symbol
+  def initialize(parent, ruby_symbol)
     super parent
-    @symbol = symbol
+    @ruby_symbol = ruby_symbol
   end
 end
 

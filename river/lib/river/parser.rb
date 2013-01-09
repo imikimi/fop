@@ -118,11 +118,11 @@ class Parser < BabelBridge::Parser
   end
 
   rule :member_set, :member_identifier, "=", :statement do
-    def to_model; River::Model::MemberSet.new member_identifier.to_sym, statement.to_model, :parse_node => self; end
+    def to_model; River::Model::MemberSet.new identifier.to_sym, statement.to_model, :parse_node => self; end
   end
 
   rule :member_get, :member_identifier do
-    def to_model; River::Model::MemberGet.new member_identifier.to_sym, :parse_node => self; end
+    def to_model; River::Model::MemberGet.new identifier.to_sym, :parse_node => self; end
   end
 
   rule :identifier_get, dont.match(:keyword), :identifier, :parameters?, :delimiter => :space? do
@@ -140,7 +140,7 @@ class Parser < BabelBridge::Parser
 
   rule :keyword, /(root|do|end|if|while|in|else|def)\b/
 
-  rule :member_identifier, /@[_a-z][_a-z0-9]*/i
+  rule :member_identifier, "@", :identifier, :delimiter => //
   rule :identifier, /[_a-z][_a-z0-9]*/i
   rule :def_identifier, /[_a-z][_a-z0-9]*[=?!]?/i
   rule :literal, :nil
