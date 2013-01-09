@@ -24,19 +24,11 @@ class Parser < BabelBridge::Parser
     def to_model; River::Model::StatementBlock.new statement ? statement.collect{|s|s.to_model} : [], :parse_node => self; end
   end
 
-  #rule :not_end_statement, dont.match("end"), :statement
-
-
   binary_operators_rule :statement, :method_invocation_chain, [[:/, :*], [:+, :-], [:<, :<=, :>, :>=, :==]], :delimiter => :space? do
     def to_model
       River::Model::MethodInvocation.new left.to_model, operator, [right.to_model], :parse_node => self
     end
   end
-
-  # if no other statements match, we can match nothing which returns nil
-#  rule :statement, could.match(";") do
-#    def to_model; River::Model::Constant.new nil; end
-#  end
 
   rule :method_invocation_chain, :operand, ".", many(:method_invocation, "."), :delimiter => :space? do
     def to_model
@@ -68,7 +60,14 @@ class Parser < BabelBridge::Parser
   rule :operand, :function_definition
   rule :operand, :if_statement
   rule :operand, :while_statement
-  rule :operand, :context_statement
+  rule :operand, :parenthetical_expression
+  rule :operand, :local_variable_set
+  rule :operand, :member_set
+  rule :operand, :literal
+  rule :operand, :self
+  rule :operand, :identifier_get
+  rule :operand, :member_get
+  rule :operand, :block
 
   rule :function_definition, "def", :def_identifier, :parameter_list, :statements, "end", :delimiter => :space? do
     def to_model; River::Model::FunctionDefinition.new def_identifier.to_sym, parameter_names, statements.to_model, :parse_node => self; end
@@ -93,20 +92,7 @@ class Parser < BabelBridge::Parser
     def to_model; River::Model::WhileStatement.new statement.to_model, statements.to_model, :parse_node => self; end
   end
 
-  rule :context_statement, "in", :statement_then_statements, "end" do
-    def to_model; River::Model::ContextStatement.new statement.to_model, statements.to_model, :parse_node => self; end
-  end
-
   rule :statement_then_statements, :statement, :end_statement, :statements, :delimiter => //
-
-  rule :operand, :parenthetical_expression
-  rule :operand, :local_variable_set
-  rule :operand, :member_set
-  rule :operand, :literal
-  rule :operand, :self
-  rule :operand, :identifier_get
-  rule :operand, :member_get
-  rule :operand, :block
 
   rule :block, "do", :do_parameter_list?, :statements, "end" do
     def to_model; River::Model::DoBlock.new parameter_names, statements.to_model, :parse_node => self; end
@@ -119,7 +105,6 @@ class Parser < BabelBridge::Parser
       @parameter_names ||= identifier.collect{|a|a.to_sym}
     end
   end
-
 
   rule :parenthetical_expression, "(", :statement, ")"
 

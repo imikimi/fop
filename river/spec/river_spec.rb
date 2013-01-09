@@ -104,31 +104,6 @@ describe "basic OO features" do
   end
 end
 
-describe "in-block" do
-  include RiverSpecHelper
-
-  it "should work to get the root object" do
-    test_eval(<<ENDCODE).should == 120
-      @foo = 120
-      in root
-        @foo
-      end
-ENDCODE
-  end
-
-  it "should work to execute in a context" do
-    test_eval("obj=new;in obj; def foo; 123 end end;obj.foo").should==123
-  end
-
-  it "'in' does not define a new scope" do
-    test_eval(<<ENDCODE).should == 120
-      foo = 120
-      in root
-        foo
-      end
-ENDCODE
-  end
-end
 
 describe "do-blocks" do
   include RiverSpecHelper

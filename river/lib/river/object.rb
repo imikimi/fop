@@ -9,6 +9,11 @@ class Object
       Object.new.tap do |o|
         o.set_method :new, lambda {|runtime,context,params| context.new}
         o.set_method :debug, lambda {|runtime,context,params| puts params.collect{|a| a.inspect}.join(', ')} # temporary implementation for debugging
+        o.set_method :eval, (lambda do |runtime,context,params|
+          River::Runtime::Tests.validate_parameter_length(params,1)
+          block = params[0]
+          block.invoke_in context, runtime, :call, [], nil
+        end)
       end
     end
   end
@@ -58,11 +63,15 @@ class Object
   end
 
   def invoke(runtime, method_name, params, invoking_model)
+    invoke_in self, runtime, method_name, params, invoking_model
+  end
+
+  def invoke_in(context, runtime, method_name, params, invoking_model)
     method = find_method method_name
     if method
-      method.call runtime, self, params
+      method.call runtime, context, params
     else
-      raise "method #{method_name.inspect} not found on object #{inspect} methods=#{mmethods.keys.inspect} (line #{invoking_model.source_line}, column #{invoking_model.source_column})"
+      raise "method #{method_name.inspect} not found on object #{context.inspect} methods=#{mmethods.keys.inspect} (line #{invoking_model && invoking_model.source_line}, column #{invoking_model && invoking_model.source_column})"
     end
   end
 end

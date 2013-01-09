@@ -52,37 +52,6 @@ class FunctionDefinition < ModelNode
   def to_s; name; end
 end
 
-# Execute "body" in a context.
-# NOTE: context == the "self" pointer
-class ContextStatement < ModelNode
-  include BlockTools
-
-  # context_statement returns the context in which the body will be executed
-  attr_accessor :context_statement
-
-  def to_code
-    "in #{context_statement.to_code}\n#{indent body.to_code}\nend"
-  end
-
-  def to_hash
-    super.merge context_statement:context_statement.to_hash, body:body.to_hash
-  end
-
-  def initialize(context_statement, body, options = {})
-    super options
-    @context_statement = context_statement
-    @body = body
-  end
-
-  def evaluate(runtime)
-    context = context_statement.evaluate runtime
-
-    runtime.in_context context do
-      body.evaluate runtime
-    end
-  end
-end
-
 class StatementBlock < ModelNode
   attr_accessor :statements
 

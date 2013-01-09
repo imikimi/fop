@@ -33,7 +33,7 @@ ENDCODE
   it "complex test" do
     test_eval(<<ENDCODE).should == 120
       point = new
-      in point
+      point.eval do
         @x = @y = 0
         def x; @x end
         def y; @y end
@@ -53,19 +53,19 @@ ENDCODE
       @linked_list = new
       @linked_list_node = new
 
-      in root
+      root.eval do
         def linked_list; @linked_list; end
         def linked_list_node; @linked_list_node; end
       end
 
-      in @linked_list_node
+      @linked_list_node.eval do
         def next; @next end
         def value; @value end
         def set_next(n); @next = n end
         def set_value(v); @value = v end
       end
 
-      in @linked_list
+      @linked_list.eval do
         def head; @head end
         def tail; @tail end
 

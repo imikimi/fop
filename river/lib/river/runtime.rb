@@ -1,6 +1,14 @@
 module River
 module Runtime
 
+class Tests
+  class << self
+    def validate_parameter_length(parameters, expected_length)
+      raise "Wrong number of parametrs. Expected #{required_length}, got #{parameters.length}." unless parameters.length==expected_length
+    end
+  end
+end
+
 class StackFrame
   attr_accessor :parent
   attr_accessor :locals

@@ -64,7 +64,7 @@ class MethodInvocation < ModelNode
   end
 
   def validate_parameter_length(required_length)
-    raise "Wrong number of parametrs. Expected #{required_length}, got #{parameters.length}." unless parameters.length==required_length
+    River::Runtime::Tests.validate_parameter_length(parameters,required_length)
   end
 
   def evaluated_object(runtime)

@@ -1,8 +1,9 @@
-require File.join(File.dirname(__FILE__),"..","lib","river")
+require File.join(File.dirname(__FILE__),"spec_helper")
 
 module River
 module Runtime
 describe Object do
+  include RiverSpecHelper
 
   it "should be creatable" do
     Object.new.class.should == Object
@@ -26,6 +27,20 @@ describe Object do
     o1 = Object.new
     o2 = Object.new(o1)
     lambda {o1.parent = o2}.should raise_error
+  end
+
+
+  it "should work to eval on the root object" do
+    test_eval(<<ENDCODE).should == 120
+      @foo = 120
+      root.eval do
+        @foo
+      end
+ENDCODE
+  end
+
+  it "should work to eval on a non-root object" do
+    test_eval("obj=new;obj.eval do def foo; 123 end end;obj.foo").should==123
   end
 
 end
