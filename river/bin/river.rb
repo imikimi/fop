@@ -9,6 +9,9 @@ def river(args)
     banner <<ENDBANNER
 #{v}
 
+Without the -t or -j options this will execute the
+specified .River files in the order they are listed.
+
 Usage:
 
   #{__FILE__} [options] <files>
