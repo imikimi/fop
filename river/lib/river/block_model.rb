@@ -1,7 +1,7 @@
 module River
 module Model
 
-module BlockTools
+class Block < ModelNode
   attr_accessor :parameter_names, :body
 
   def setup_stack_frame(context, params, parent_stack_frame = nil)
@@ -22,40 +22,7 @@ module BlockTools
   end
 end
 
-class FunctionDefinition < ModelNode
-  include BlockTools
-  attr_accessor :name
-
-  def to_code
-    parameters_code = parameter_names && parameter_names.length>0 ? "(#{parameter_names.join(', ')})" : ""
-    body_code = body.to_code
-    code = "def #{name}#{parameters_code}\n#{indent body.to_code}\nend"
-    one_liner(code) || code
-  end
-
-  def to_hash
-    super.merge method_name:name.to_s, parameter_names:parameter_names.collect(&:to_s), body:body.to_hash
-  end
-
-  def initialize(name, parameter_names, body, options = {})
-    super options
-    @name = name
-    @parameter_names = parameter_names
-    @body = body
-    children body
-  end
-
-  def evaluate(runtime_now)
-    runtime_now.context.set_method(name) do |runtime_later,context,params|
-      invoke(runtime_later,context,params)
-    end
-    1 # return true
-  end
-
-  def to_s; name; end
-end
-
-class StatementBlock < ModelNode
+class StatementBlock < Block
   attr_accessor :statements
 
   def initialize(statements, options = {})
@@ -66,6 +33,10 @@ class StatementBlock < ModelNode
 
   def is_part_of_message_parameter
     false
+  end
+
+  def to_code
+    statements.collect(&:to_code).join "\n"
   end
 
   def to_hash
@@ -79,14 +50,48 @@ class StatementBlock < ModelNode
     end
     ret
   end
-
-  def to_code
-    statements.collect(&:to_code).join "\n"
-  end
 end
 
-class DoBlock < ModelNode
-  include BlockTools
+class FunctionDefinition < Block
+  attr_accessor :name
+
+  def initialize(name, parameter_names, body, options = {})
+    super options
+    @name = name
+    @parameter_names = parameter_names
+    @body = body
+    children body
+  end
+
+  def to_s; name; end
+
+  def to_code
+    parameters_code = parameter_names && parameter_names.length>0 ? "(#{parameter_names.join(', ')})" : ""
+    body_code = body.to_code
+    code = "def #{name}#{parameters_code}\n#{indent body.to_code}\nend"
+    one_liner(code) || code
+  end
+
+  def to_hash
+    super.merge method_name:name.to_s, parameter_names:parameter_names.collect(&:to_s), body:body.to_hash
+  end
+
+  def evaluate(runtime)
+    proc = runtime.root.new self
+    runtime.context.set_method(name,proc)
+    proc
+  end
+
+end
+
+class DoBlock < Block
+
+  def initialize(parameter_names, body, options = {})
+    super options
+    @parameter_names = parameter_names
+    @body = body
+    children body
+  end
 
   def to_code
     parameters_code = parameter_names && parameter_names.length>0 && "|#{parameter_names.join(', ')}|"
@@ -97,20 +102,9 @@ class DoBlock < ModelNode
     super.merge parameter_names:parameter_names.collect(&:to_s), body:body.to_hash
   end
 
-  def initialize(parameter_names, body, options = {})
-    super options
-    @parameter_names = parameter_names
-    @body = body
-    children body
-  end
-
   def evaluate(runtime)
     closure = runtime.current_stack_frame
-    runtime.root.new.tap do |functor|
-      functor.set_method(:call) do |runtime_later,context,params|
-        invoke runtime_later, closure.context, params, closure
-      end
-    end
+    runtime.root.new self, closure
   end
 end
 

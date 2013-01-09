@@ -26,9 +26,10 @@ class Object
     self.parent=_parent
   end
 
-  def new(special_type = nil)
-    case special_type
-    when ::Symbol then Runtime::Symbol.new self, Symbol
+  def new(*args)
+    case args[0]
+    when Model::Block then Runtime::Proc.new self, *args
+    when ::Symbol then Runtime::Symbol.new self, *args
     when nil then Runtime::Object.new self
     else
       raise "hell"
@@ -90,6 +91,24 @@ class Symbol < Object
   def initialize(parent, symbol)
     super parent
     @symbol = symbol
+  end
+end
+
+class Proc < Object
+  attr_accessor :block
+  def initialize(parent, block, closure = nil)
+    super parent
+    @block = block
+    @closure = closure
+    set_method(:call) {|runtime, context, params| call runtime, context, params}
+  end
+
+  def call(runtime, context, params)
+    if @closure
+      @block.invoke runtime, @closure.context, params, @closure
+    else
+      @block.invoke runtime, context, params
+    end
   end
 end
 

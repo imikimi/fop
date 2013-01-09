@@ -79,7 +79,7 @@ class Stack
   end
 
   def get_symbol(symbol)
-    symbols||=root.new :symbol
+    symbols||=root.new symbol
   end
 
   def in_context(new_context)
