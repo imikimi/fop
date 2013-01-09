@@ -8,6 +8,7 @@ require "json"
   model
   block_model
   parser
+  object
   runtime
 }.each do |src|
   require File.join(File.dirname(__FILE__),"river",src)
