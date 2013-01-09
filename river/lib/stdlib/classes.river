@@ -1,60 +1,19 @@
-
-# class definitions like this
-class Foo
-  # block
-
-  #The equivelent of this ruby code:
-  #class <<self
-  #end
-  # is:
-  in self.class do
+@classes = new
+def classes; @classes; end
+def attr_reader(name)
+  set_method name, do
+    get_member name
   end
-
 end
 
-# class Foo < SuperClass
-#   # block
-# end
-# is are equivelent to:
-in Class.open_class(:Foo, SuperClass).prototype do
-  # block
-end
-
-class Class
-  def open_class(name, instance_super)
-    Root.get_member(name) || begin
-      new_class = new name, instance_super
-      Root.set_member name, new_class
+def class(name,block)
+  root.classes.eval do
+    klass = if get_member name
+      get_member name
+    else
+      attr_reader name
+      set_member name, new
     end
-  end
-
-  def initialize(name, instance_super)
-    @name = name
-    @prototype = instance_super.new
-    @prototype.set_member :class, self
-  end
-
-  def new(*params)
-    @prototype.new *params
-  end
-
-  def optimize
-    @prototype.optimize
+    klass.eval block
   end
 end
-
-# what does NEW do?
-
-def new(prototype,params)
-  object = malloc prototype.instance_size
-  object.super = prototype
-  if prototype.optimized?
-    memset object, prototype.instance_size, 0
-  else
-    object.members = {}
-  end
-  object.initialize(*params)
-end
-
-
-new and optimize are built into the prototype level system. They are not part of the class system.
