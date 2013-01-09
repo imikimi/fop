@@ -45,4 +45,4 @@ product = 1
 my_ll.each do |el|
   product = product * el
 end
-product
+debug product

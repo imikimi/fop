@@ -8,7 +8,7 @@ class Object
     def new_root_object
       Object.new.tap do |o|
         o.set_method :new, lambda {|runtime,context,params| context.new}
-        o.set_method :debug, lambda {|runtime,context,params| puts params.inspect} # temporary implementation for debugging
+        o.set_method :debug, lambda {|runtime,context,params| puts params.collect{|a| a.inspect}.join(', ')} # temporary implementation for debugging
       end
     end
   end

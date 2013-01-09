@@ -1,1 +1,420 @@
-{"class_name":"StatementBlock","statements":[{"class_name":"MemberSet","identifier":"@linked_list","statement":{"class_name":"IdentifierGet","identifier":"new","parameters":null}},{"class_name":"MemberSet","identifier":"@linked_list_node","statement":{"class_name":"IdentifierGet","identifier":"new","parameters":null}},{"class_name":"ContextStatement","context_statement":{"class_name":"RootObject"},"body":{"class_name":"StatementBlock","statements":[{"class_name":"FunctionDefinition","method_name":"linked_list","parameter_names":[],"body":{"class_name":"StatementBlock","statements":[{"class_name":"MemberGet","identifier":"@linked_list"}]}},{"class_name":"FunctionDefinition","method_name":"linked_list_node","parameter_names":[],"body":{"class_name":"StatementBlock","statements":[{"class_name":"MemberGet","identifier":"@linked_list_node"}]}}]}},{"class_name":"ContextStatement","context_statement":{"class_name":"MemberGet","identifier":"@linked_list_node"},"body":{"class_name":"StatementBlock","statements":[{"class_name":"FunctionDefinition","method_name":"next","parameter_names":[],"body":{"class_name":"StatementBlock","statements":[{"class_name":"MemberGet","identifier":"@next"}]}},{"class_name":"FunctionDefinition","method_name":"value","parameter_names":[],"body":{"class_name":"StatementBlock","statements":[{"class_name":"MemberGet","identifier":"@value"}]}},{"class_name":"FunctionDefinition","method_name":"set_next","parameter_names":["n"],"body":{"class_name":"StatementBlock","statements":[{"class_name":"MemberSet","identifier":"@next","statement":{"class_name":"IdentifierGet","identifier":"n","parameters":null}}]}},{"class_name":"FunctionDefinition","method_name":"set_value","parameter_names":["v"],"body":{"class_name":"StatementBlock","statements":[{"class_name":"MemberSet","identifier":"@value","statement":{"class_name":"IdentifierGet","identifier":"v","parameters":null}}]}}]}},{"class_name":"ContextStatement","context_statement":{"class_name":"MemberGet","identifier":"@linked_list"},"body":{"class_name":"StatementBlock","statements":[{"class_name":"FunctionDefinition","method_name":"head","parameter_names":[],"body":{"class_name":"StatementBlock","statements":[{"class_name":"MemberGet","identifier":"@head"}]}},{"class_name":"FunctionDefinition","method_name":"tail","parameter_names":[],"body":{"class_name":"StatementBlock","statements":[{"class_name":"MemberGet","identifier":"@tail"}]}},{"class_name":"FunctionDefinition","method_name":"add","parameter_names":["value"],"body":{"class_name":"StatementBlock","statements":[{"class_name":"IfStatement","test_statement":{"class_name":"MemberGet","identifier":"@tail"},"body":{"class_name":"StatementBlock","statements":[{"class_name":"MemberSet","identifier":"@tail","statement":{"class_name":"MethodInvocation","method_name":"set_next","parameters":[{"class_name":"MethodInvocation","method_name":"new","parameters":[]}]}}]},"else_clause":{"class_name":"StatementBlock","statements":[{"class_name":"MemberSet","identifier":"@head","statement":{"class_name":"MemberSet","identifier":"@tail","statement":{"class_name":"MethodInvocation","method_name":"new","parameters":[]}}}]}},{"class_name":"MethodInvocation","method_name":"set_value","parameters":[{"class_name":"IdentifierGet","identifier":"value","parameters":null}]}]}},{"class_name":"FunctionDefinition","method_name":"each","parameter_names":["block"],"body":{"class_name":"StatementBlock","statements":[{"class_name":"LocalVariableSet","identifier":"current","statement":{"class_name":"MemberGet","identifier":"@head"}},{"class_name":"WhileStatement","test_statement":{"class_name":"IdentifierGet","identifier":"current","parameters":null},"body":{"class_name":"StatementBlock","statements":[{"class_name":"MethodInvocation","method_name":"call","parameters":[{"class_name":"MethodInvocation","method_name":"value","parameters":[]}]},{"class_name":"LocalVariableSet","identifier":"current","statement":{"class_name":"MethodInvocation","method_name":"next","parameters":[]}}]}},{"class_name":"Self"}]}}]}},{"class_name":"LocalVariableSet","identifier":"my_ll","statement":{"class_name":"MethodInvocation","method_name":"new","parameters":[]}},{"class_name":"MethodInvocation","method_name":"add","parameters":[{"class_name":"Constant","value":2}]},{"class_name":"MethodInvocation","method_name":"add","parameters":[{"class_name":"Constant","value":5}]},{"class_name":"MethodInvocation","method_name":"add","parameters":[{"class_name":"Constant","value":12}]},{"class_name":"LocalVariableSet","identifier":"product","statement":{"class_name":"Constant","value":1}},{"class_name":"MethodInvocation","method_name":"each","parameters":[{"class_name":"DoBlock","parameter_names":["el"],"body":{"class_name":"StatementBlock","statements":[{"class_name":"LocalVariableSet","identifier":"product","statement":{"class_name":"MethodInvocation","method_name":"*","parameters":[{"class_name":"IdentifierGet","identifier":"el","parameters":null}]}}]}}]},{"class_name":"IdentifierGet","identifier":"product","parameters":null}]}
+{
+  "class_name": "StatementBlock",
+  "statements": [
+    {
+      "class_name": "MemberSet",
+      "identifier": "@linked_list",
+      "statement": {
+        "class_name": "IdentifierGet",
+        "identifier": "new",
+        "parameters": null
+      }
+    },
+    {
+      "class_name": "MemberSet",
+      "identifier": "@linked_list_node",
+      "statement": {
+        "class_name": "IdentifierGet",
+        "identifier": "new",
+        "parameters": null
+      }
+    },
+    {
+      "class_name": "ContextStatement",
+      "context_statement": {
+        "class_name": "RootObject"
+      },
+      "body": {
+        "class_name": "StatementBlock",
+        "statements": [
+          {
+            "class_name": "FunctionDefinition",
+            "method_name": "linked_list",
+            "parameter_names": [
+
+            ],
+            "body": {
+              "class_name": "StatementBlock",
+              "statements": [
+                {
+                  "class_name": "MemberGet",
+                  "identifier": "@linked_list"
+                }
+              ]
+            }
+          },
+          {
+            "class_name": "FunctionDefinition",
+            "method_name": "linked_list_node",
+            "parameter_names": [
+
+            ],
+            "body": {
+              "class_name": "StatementBlock",
+              "statements": [
+                {
+                  "class_name": "MemberGet",
+                  "identifier": "@linked_list_node"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "class_name": "ContextStatement",
+      "context_statement": {
+        "class_name": "MemberGet",
+        "identifier": "@linked_list_node"
+      },
+      "body": {
+        "class_name": "StatementBlock",
+        "statements": [
+          {
+            "class_name": "FunctionDefinition",
+            "method_name": "next",
+            "parameter_names": [
+
+            ],
+            "body": {
+              "class_name": "StatementBlock",
+              "statements": [
+                {
+                  "class_name": "MemberGet",
+                  "identifier": "@next"
+                }
+              ]
+            }
+          },
+          {
+            "class_name": "FunctionDefinition",
+            "method_name": "value",
+            "parameter_names": [
+
+            ],
+            "body": {
+              "class_name": "StatementBlock",
+              "statements": [
+                {
+                  "class_name": "MemberGet",
+                  "identifier": "@value"
+                }
+              ]
+            }
+          },
+          {
+            "class_name": "FunctionDefinition",
+            "method_name": "set_next",
+            "parameter_names": [
+              "n"
+            ],
+            "body": {
+              "class_name": "StatementBlock",
+              "statements": [
+                {
+                  "class_name": "MemberSet",
+                  "identifier": "@next",
+                  "statement": {
+                    "class_name": "IdentifierGet",
+                    "identifier": "n",
+                    "parameters": null
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "class_name": "FunctionDefinition",
+            "method_name": "set_value",
+            "parameter_names": [
+              "v"
+            ],
+            "body": {
+              "class_name": "StatementBlock",
+              "statements": [
+                {
+                  "class_name": "MemberSet",
+                  "identifier": "@value",
+                  "statement": {
+                    "class_name": "IdentifierGet",
+                    "identifier": "v",
+                    "parameters": null
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "class_name": "ContextStatement",
+      "context_statement": {
+        "class_name": "MemberGet",
+        "identifier": "@linked_list"
+      },
+      "body": {
+        "class_name": "StatementBlock",
+        "statements": [
+          {
+            "class_name": "FunctionDefinition",
+            "method_name": "head",
+            "parameter_names": [
+
+            ],
+            "body": {
+              "class_name": "StatementBlock",
+              "statements": [
+                {
+                  "class_name": "MemberGet",
+                  "identifier": "@head"
+                }
+              ]
+            }
+          },
+          {
+            "class_name": "FunctionDefinition",
+            "method_name": "tail",
+            "parameter_names": [
+
+            ],
+            "body": {
+              "class_name": "StatementBlock",
+              "statements": [
+                {
+                  "class_name": "MemberGet",
+                  "identifier": "@tail"
+                }
+              ]
+            }
+          },
+          {
+            "class_name": "FunctionDefinition",
+            "method_name": "add",
+            "parameter_names": [
+              "value"
+            ],
+            "body": {
+              "class_name": "StatementBlock",
+              "statements": [
+                {
+                  "class_name": "IfStatement",
+                  "test_statement": {
+                    "class_name": "MemberGet",
+                    "identifier": "@tail"
+                  },
+                  "body": {
+                    "class_name": "StatementBlock",
+                    "statements": [
+                      {
+                        "class_name": "MemberSet",
+                        "identifier": "@tail",
+                        "statement": {
+                          "class_name": "MethodInvocation",
+                          "method_name": "set_next",
+                          "parameters": [
+                            {
+                              "class_name": "MethodInvocation",
+                              "method_name": "new",
+                              "parameters": [
+
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "else_clause": {
+                    "class_name": "StatementBlock",
+                    "statements": [
+                      {
+                        "class_name": "MemberSet",
+                        "identifier": "@head",
+                        "statement": {
+                          "class_name": "MemberSet",
+                          "identifier": "@tail",
+                          "statement": {
+                            "class_name": "MethodInvocation",
+                            "method_name": "new",
+                            "parameters": [
+
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "class_name": "MethodInvocation",
+                  "method_name": "set_value",
+                  "parameters": [
+                    {
+                      "class_name": "IdentifierGet",
+                      "identifier": "value",
+                      "parameters": null
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "class_name": "FunctionDefinition",
+            "method_name": "each",
+            "parameter_names": [
+              "block"
+            ],
+            "body": {
+              "class_name": "StatementBlock",
+              "statements": [
+                {
+                  "class_name": "LocalVariableSet",
+                  "identifier": "current",
+                  "statement": {
+                    "class_name": "MemberGet",
+                    "identifier": "@head"
+                  }
+                },
+                {
+                  "class_name": "WhileStatement",
+                  "test_statement": {
+                    "class_name": "IdentifierGet",
+                    "identifier": "current",
+                    "parameters": null
+                  },
+                  "body": {
+                    "class_name": "StatementBlock",
+                    "statements": [
+                      {
+                        "class_name": "MethodInvocation",
+                        "method_name": "call",
+                        "parameters": [
+                          {
+                            "class_name": "MethodInvocation",
+                            "method_name": "value",
+                            "parameters": [
+
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "class_name": "LocalVariableSet",
+                        "identifier": "current",
+                        "statement": {
+                          "class_name": "MethodInvocation",
+                          "method_name": "next",
+                          "parameters": [
+
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "class_name": "Self"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "class_name": "LocalVariableSet",
+      "identifier": "my_ll",
+      "statement": {
+        "class_name": "MethodInvocation",
+        "method_name": "new",
+        "parameters": [
+
+        ]
+      }
+    },
+    {
+      "class_name": "MethodInvocation",
+      "method_name": "add",
+      "parameters": [
+        {
+          "class_name": "Constant",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "class_name": "MethodInvocation",
+      "method_name": "add",
+      "parameters": [
+        {
+          "class_name": "Constant",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "class_name": "MethodInvocation",
+      "method_name": "add",
+      "parameters": [
+        {
+          "class_name": "Constant",
+          "value": 12
+        }
+      ]
+    },
+    {
+      "class_name": "LocalVariableSet",
+      "identifier": "product",
+      "statement": {
+        "class_name": "Constant",
+        "value": 1
+      }
+    },
+    {
+      "class_name": "MethodInvocation",
+      "method_name": "each",
+      "parameters": [
+        {
+          "class_name": "DoBlock",
+          "parameter_names": [
+            "el"
+          ],
+          "body": {
+            "class_name": "StatementBlock",
+            "statements": [
+              {
+                "class_name": "LocalVariableSet",
+                "identifier": "product",
+                "statement": {
+                  "class_name": "MethodInvocation",
+                  "method_name": "*",
+                  "parameters": [
+                    {
+                      "class_name": "IdentifierGet",
+                      "identifier": "el",
+                      "parameters": null
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "class_name": "IdentifierGet",
+      "identifier": "debug",
+      "parameters": [
+        {
+          "class_name": "IdentifierGet",
+          "identifier": "product",
+          "parameters": null
+        }
+      ]
+    }
+  ]
+}
