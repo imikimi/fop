@@ -78,6 +78,14 @@ ENDCODE
 ENDCODE
   end
 
+  it "symbol should work" do
+    test_eval(":symbol").ruby_object.should == :symbol
+  end
+
+  it "string should work" do
+    test_eval('"string"').ruby_object.should == "string"
+  end
+
 end
 end
 end

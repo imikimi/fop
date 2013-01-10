@@ -1,19 +1,61 @@
-@classes = new
-def classes; @classes; end
 def attr_reader(name)
   set_method name, do
     get_member name
   end
 end
+def tap(block)
+  block.call self
+  self
+end
+def tap_eval(block)
+  self.eval block
+  self
+end
+
+attr_reader :class_prototype
+attr_reader :classes
+attr_reader :class_instance_prototype
+
+@class_prototype = new.tap_eval do
+  attr_reader name
+
+  def create_prototype(klass)
+    root.class_prototype.new.tap_eval do
+      @class = klass
+    end
+  end
+end
+
+@class_instance_prototype = new.tap_eval do
+  def class
+    if @class
+      @class
+    else
+      super
+    end
+  end
+end
+
+@classes = new.tap_eval do
+  def get_class(name)
+    get_member(name) || new_class(name)
+  end
+
+  def new_class(name)
+    attr_reader name
+    set_member name, root.class_prototype.new.tap_eval do
+      @name = name
+    end
+  end
+end
 
 def class(name,block)
   root.classes.eval do
-    klass = if get_member name
-      get_member name
-    else
-      attr_reader name
-      set_member name, new
-    end
+    klass = get_class(name)
     klass.eval block
   end
+end
+
+class :foo, do
+
 end

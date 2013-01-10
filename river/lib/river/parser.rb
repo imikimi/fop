@@ -24,9 +24,13 @@ class Parser < BabelBridge::Parser
     def to_model; River::Model::StatementBlock.new statement ? statement.collect{|s|s.to_model} : [], :parse_node => self; end
   end
 
-  binary_operators_rule :statement, :method_invocation_chain, [[:/, :*], [:+, :-], [:<, :<=, :>, :>=, :==]], :delimiter => :space? do
+  binary_operators_rule :statement, :method_invocation_chain, [[:/, :*], [:+, :-], [:<, :<=, :>, :>=, :==], [:'&&', :'||']], :delimiter => :space? do
     def to_model
-      River::Model::MethodInvocation.new left.to_model, operator, [right.to_model], :parse_node => self
+      case operator
+      when :'&&' then River::Model::LogicalAnd.new left.to_model, operator, right.to_model, :parse_node => self
+      when :'||' then River::Model::LogicalOr.new left.to_model, operator, right.to_model, :parse_node => self
+      else            River::Model::MethodInvocation.new left.to_model, operator, [right.to_model], :parse_node => self
+      end
     end
   end
 
@@ -147,6 +151,7 @@ class Parser < BabelBridge::Parser
   rule :literal, :root_object
   rule :literal, :integer
   rule :literal, :symbol
+  rule :literal, :string
 
   rule :space, many(:space_or_comment), :delimiter => //
   rule :whitespace, many(:whitespace_or_comment), :delimiter => //
@@ -155,6 +160,11 @@ class Parser < BabelBridge::Parser
   rule :whitespace_or_comment, /\s+/
   rule :whitespace_or_comment, :comment
   rule :comment, /#[^\n]*/
+
+  rule :string, /"(?:[^\\"]|\\.)*"/ do
+    def string; eval to_s.gsub('#{', '##{'); end
+    def to_model; River::Model::String.new string, :parse_node => self; end
+  end
 
   rule :symbol, ":", :identifier, :delimiter => // do
     def to_model; River::Model::Symbol.new identifier.to_sym, :parse_node => self; end

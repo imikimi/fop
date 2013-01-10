@@ -59,11 +59,34 @@ class Stack
     @top_stack_frame ||= StackFrame.new
   end
 
-  attr_reader :root, :symbols
+  attr_reader :root, :symbols, :parser, :includes
 
   def initialize
     @root = top_stack_frame.context
     @symbols = {}
+    @parser = River::Parser.new
+    @includes = {}
+  end
+
+  def river_include(filename)
+    filename = File.expand_path(filename)
+    filename += ".river" unless filename[/\.river$/]
+    return nil if @includes[filename]
+    raise "include file does not exist: #{filename}" unless File.exists?(filename)
+
+    src = File.read filename
+    parsed = parser.parse src
+
+    unless parsed
+      $stderr.puts "Parsing failed on file: #{file}"
+      $stderr.puts parser.parser_failure_info
+      raise "included file #{filename.inspect} failed to parse"
+    end
+
+    model = parsed.to_model
+    model.evaluate self
+
+    @includes[filename] = 1 # return a true value for river = any integer works
   end
 
   # the stack consists of an array of hashs
@@ -90,7 +113,7 @@ class Stack
   end
 
   def get_symbol(symbol)
-    symbols||=root.new symbol
+    symbols[symbol]||=root.new symbol
   end
 
   def in_context(new_context)

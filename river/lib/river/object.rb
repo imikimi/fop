@@ -17,23 +17,28 @@ class Object
 
         o.set_method(:set_method) do |runtime,context,params|
           sym, proc = River::Runtime::Tests.validate_parameters params, [Runtime::Symbol, Runtime::Proc], "method = set_method"
-          context.set_method sym.ruby_symbol, proc
+          context.set_method sym.ruby_object, proc
         end
 
         o.set_method(:get_method) do |runtime,context,params|
           River::Runtime::Tests.validate_parameters params, [Runtime::Symbol], "method = get_method"
-          method = context.find_method params[0].ruby_symbol
+          method = context.find_method params[0].ruby_object
           method.kind_of?(Runtime::Proc) ? method : nil   # currently we allow procs written in pure ruby (like this one) as well as river procs; only return river procs
         end
 
         o.set_method(:set_member) do |runtime,context,params|
           sym, obj = River::Runtime::Tests.validate_parameters params, [Runtime::Symbol, true], "method = set_member"
-          context.set_member sym.ruby_symbol, obj
+          context.set_member sym.ruby_object, obj
         end
 
         o.set_method(:get_member) do |runtime,context,params|
           River::Runtime::Tests.validate_parameters params, [Runtime::Symbol], "method = get_member"
-          context.get_member params[0].ruby_symbol
+          context.get_member params[0].ruby_object
+        end
+
+        o.set_method(:require) do  |runtime,context,params|
+          River::Runtime::Tests.validate_parameters params, [Runtime::String], "method = require"
+          runtime.river_include params[0].ruby_object
         end
       end
     end
@@ -45,12 +50,13 @@ class Object
 
   def new(*args)
     case args[0]
-    when Model::Block then Runtime::Proc.new self, *args
-    when ::Symbol then Runtime::Symbol.new self, *args
-    when nil then Runtime::Object.new self
+    when Model::Block then Runtime::Proc
+    when ::String then Runtime::String
+    when ::Symbol then Runtime::Symbol
+    when nil then Runtime::Object
     else
       raise "hell"
-    end
+    end.new self, *args
   end
 
   def ancestor?(k)
@@ -111,13 +117,6 @@ class Object
   end
 end
 
-class Symbol < Object
-  attr_accessor :ruby_symbol
-  def initialize(parent, ruby_symbol)
-    super parent
-    @ruby_symbol = ruby_symbol
-  end
-end
 
 class Proc < Object
   attr_accessor :block
@@ -133,6 +132,31 @@ class Proc < Object
       @block.invoke runtime, @closure.context, params, @closure
     else
       @block.invoke runtime, context, params
+    end
+  end
+end
+
+class WrappedRubyObject < Object
+  attr_accessor :ruby_object
+
+  def initialize(parent, ruby_object)
+    super parent
+    @ruby_object = ruby_object
+  end
+
+  def inspect; ruby_object.inspect; end
+end
+
+class Symbol < WrappedRubyObject
+end
+
+class String < WrappedRubyObject
+  def initialize(parent, ruby_object)
+    super
+    set_method(:length) {|runtime, context, params| ruby_object.length}
+    set_method(:+) do |runtime, context, params|
+      River::Runtime::Tests.validate_parameters params, [Runtime::String], "method = +"
+      Runtime::String.new parent, ruby_object + params[0].ruby_object
     end
   end
 end

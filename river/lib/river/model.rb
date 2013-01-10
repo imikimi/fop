@@ -60,6 +60,34 @@ class ModelNode
   end
 end
 
+class SpecialOperator < ModelNode
+  attr_accessor :left, :right, :operator
+
+  def initialize(left, operator, right, options={})
+    super options
+    @left = left
+    @right = right
+    @operator = operator
+    children left, right
+  end
+
+  def to_code
+    "#{left} #{operator} #{right}"
+  end
+
+  def to_hash
+    super.merge left:left.to_hash, right:right.to_hash
+  end
+end
+
+class LogicalOr < SpecialOperator
+  def evaluate(runtime); @left.evaluate(runtime) || @right.evaluate(runtime) end
+end
+
+class LogicalAnd < SpecialOperator
+  def evaluate(runtime); @left.evaluate(runtime) && @right.evaluate(runtime) end
+end
+
 class MethodInvocation < ModelNode
   attr_accessor :identifier
   attr_accessor :object
@@ -109,10 +137,14 @@ class MethodInvocation < ModelNode
     param_evals = evaluated_parameters runtime
     obj_val = evaluated_object runtime
     raise "invoked method #{identifier.inspect} on nil" unless obj_val
-    case identifier
-    when :+, :*, :/, :- then validate_parameters(1);obj_val.send(identifier, param_evals[0])
-    when :<, :<=, :>, :>=, :== then validate_parameters(1);obj_val.send(identifier, param_evals[0]) ? 1 : nil
-    else evaluate_method(runtime,obj_val,param_evals)
+    if obj_val.kind_of? Integer
+      case identifier
+      when :+, :*, :/, :- then validate_parameters(1);obj_val.send(identifier, param_evals[0])
+      when :<, :<=, :>, :>=, :== then validate_parameters(1);obj_val.send(identifier, param_evals[0]) ? 1 : nil
+      else raise "unsupported method on Integer #{identifier}"
+      end
+    else
+      evaluate_method(runtime,obj_val,param_evals)
     end
   end
 
@@ -321,24 +353,16 @@ class Constant < ModelNode
   end
 end
 
-class Symbol < ModelNode
-  attr_accessor :symbol
-
-  def to_code
-    ":#{symbol}"
-  end
-
-  def to_hash
-    super.merge symbol:symbol
-  end
-
-  def initialize(symbol, options = {})
-    super options
-    @symbol = symbol
-  end
-
+class String < Constant
   def evaluate(runtime)
-    runtime.get_symbol symbol
+    runtime.root.new(value)
+  end
+end
+
+# TODO: remove the Symbol and String models and replace with just Model::Constant. However, we need to register the symbol with the runtime at parse-time. Therefor the Parser needs to be linked to the runtime, which it isn't currently.
+class Symbol < Constant
+  def evaluate(runtime)
+    runtime.get_symbol value
   end
 end
 

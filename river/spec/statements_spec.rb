@@ -19,6 +19,14 @@ describe "statements" do
     test_eval "a = 60;a*2", 120
   end
 
+  it "logical ||" do
+    test_eval "nil || 120", 120
+  end
+
+  it "logical &&" do
+    test_eval "1 && 120", 120
+  end
+
   it "multiple statements separated by newlines or semicolons" do
     test_eval "a = 12; b = 10; a * b", 120
     test_eval <<ENDCODE, 120
