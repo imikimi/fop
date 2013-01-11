@@ -23,6 +23,18 @@ describe "statements" do
     test_eval "nil || 120", 120
   end
 
+  it "keyword_like vars" do
+    test_eval <<ENDCODE, 100
+root_var = 20
+end_var = 20
+while_var = 20
+if_var = 20
+do_var = 20
+root_var + end_var + while_var + if_var + do_var
+ENDCODE
+  end
+
+
   it "logical &&" do
     test_eval "1 && 120", 120
   end

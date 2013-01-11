@@ -78,7 +78,7 @@ class Stack
     parsed = parser.parse src
 
     unless parsed
-      $stderr.puts "Parsing failed on file: #{file}"
+      $stderr.puts "Parsing failed on file: #{filename}"
       $stderr.puts parser.parser_failure_info
       raise "included file #{filename.inspect} failed to parse"
     end

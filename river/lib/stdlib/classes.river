@@ -3,6 +3,11 @@ def attr_reader(name)
     get_member name
   end
 end
+def root_attr_reader(name)
+  set_method name, do
+    root.get_member name
+  end
+end
 def tap(block)
   block.call self
   self
@@ -12,15 +17,16 @@ def tap_eval(block)
   self
 end
 
-attr_reader :class_prototype
-attr_reader :classes
-attr_reader :class_instance_prototype
+root_attr_reader :class_prototype
+root_attr_reader :classes
+root_attr_reader :class_instance_prototype
 
 @class_prototype = new.tap_eval do
-  attr_reader name
+  attr_reader :name
+  attr_reader :prototype
 
   def create_prototype(klass)
-    root.class_prototype.new.tap_eval do
+    class_prototype.new.tap_eval do
       @class = klass
     end
   end
@@ -28,11 +34,7 @@ end
 
 @class_instance_prototype = new.tap_eval do
   def class
-    if @class
-      @class
-    else
-      super
-    end
+    @class || super
   end
 end
 
@@ -43,19 +45,13 @@ end
 
   def new_class(name)
     attr_reader name
-    set_member name, root.class_prototype.new.tap_eval do
+    set_member name, class_prototype.new.tap_eval do
       @name = name
+      @prototype = class_instance_prototype.new
     end
   end
 end
 
 def class(name,block)
-  root.classes.eval do
-    klass = get_class(name)
-    klass.eval block
-  end
-end
-
-class :foo, do
-
+  classes.get_class(name).prototype.eval block
 end

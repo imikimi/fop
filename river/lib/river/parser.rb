@@ -170,7 +170,7 @@ class Parser < BabelBridge::Parser
     def to_model; River::Model::Symbol.new identifier.to_sym, :parse_node => self; end
   end
 
-  rule :root_object, "root" do
+  rule :root_object, /root\b/ do
     def to_model; River::Model::RootObject.new :parse_node => self; end
   end
 
