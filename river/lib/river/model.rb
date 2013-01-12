@@ -5,6 +5,12 @@ class ModelNode
   attr_accessor :parse_node, :receives_message, :is_part_of_message_parameter
   attr_accessor :children, :parent
 
+  class <<self
+    def short_name
+      to_s.split("::")[-1]
+    end
+  end
+
   def initialize(options={})
     @parse_node = options[:parse_node]
   end
@@ -15,12 +21,32 @@ class ModelNode
     end
   end
 
+  def name;nil;end
+
   def is_part_of_message_parameter
     @is_part_of_message_parameter || (parent && parent.is_part_of_message_parameter)
   end
 
   def source_line; parse_node.line; end
   def source_column; parse_node.column; end
+  def source_file; parse_node.source_file; end
+
+  def source_loc; "(#{source_line},#{source_column})" end
+
+  def containing_block_source_ref
+    p = @parent
+    while p
+      if p.kind_of?(FunctionDefinition) || p.kind_of?(DoBlock)
+        return source_loc+" p.name"
+      end
+      p = p.parent
+      return "none"
+    end
+  end
+
+  def source_ref(current_self=nil)
+    "#{source_file}\t(#{source_line}:\t#{source_column})\t #{self.class.short_name}#{"(#{name.inspect})" if name}\t #{"self:#{current_self.inspect}" if current_self}"
+  end
 
   # output parsable source-code
   def to_code
@@ -125,7 +151,7 @@ class MethodInvocation < ModelNode
   end
 
   def evaluated_object(runtime)
-    @last_evaluated_object = object.evaluate(runtime).tap {|obj_val| raise "invoked method #{identifier.inspect} on nil" unless obj_val}
+    @last_evaluated_object = object.evaluate(runtime).tap {|obj_val| runtime.river_raise self, "invoked method #{identifier.inspect} on nil" unless obj_val}
   end
 
   def evaluated_parameters(runtime)
@@ -136,12 +162,12 @@ class MethodInvocation < ModelNode
   def evaluate(runtime)
     param_evals = evaluated_parameters runtime
     obj_val = evaluated_object runtime
-    raise "invoked method #{identifier.inspect} on nil" unless obj_val
+    runtime.river_raise "invoked method #{identifier.inspect} on nil" unless obj_val
     if obj_val.kind_of? Integer
       case identifier
       when :+, :*, :/, :- then validate_parameters(1);obj_val.send(identifier, param_evals[0])
       when :<, :<=, :>, :>=, :== then validate_parameters(1);obj_val.send(identifier, param_evals[0]) ? 1 : nil
-      else raise "unsupported method on Integer #{identifier}"
+      else runtime.river_raise self, "unsupported method on Integer #{identifier}"
       end
     else
       evaluate_method(runtime,obj_val,param_evals)

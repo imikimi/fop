@@ -5,8 +5,8 @@ class Block < ModelNode
   attr_accessor :parameter_names, :body
 
   def setup_stack_frame(context, params, parent_stack_frame = nil)
-    raise "wrong number of parameters. #{self} expects #{parameter_names.length} but got #{params.length}" unless params.length == parameter_names.length
-    stack_frame = Runtime::StackFrame.new :context => context, :parent => parent_stack_frame
+    runtime.river_raise self, "wrong number of parameters. #{self} expects #{parameter_names.length} but got #{params.length}" unless params.length == parameter_names.length
+    stack_frame = Runtime::StackFrame.new :context => context, :parent => parent_stack_frame, :source => self
     parameter_names.each_with_index do |pname,index|
       stack_frame[pname] = params[index]
     end

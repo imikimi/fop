@@ -112,7 +112,7 @@ class Object
     if method
       method.call runtime, context, params
     else
-      raise "method #{method_name.inspect} not found on object #{context.inspect} methods=#{mmethods.keys.inspect} (line #{invoking_model && invoking_model.source_line}, column #{invoking_model && invoking_model.source_column})"
+      runtime.river_raise invoking_model, "local or method #{method_name.inspect} not found"
     end
   end
 end

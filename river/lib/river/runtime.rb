@@ -27,12 +27,25 @@ class StackFrame
   attr_accessor :parent
   attr_accessor :locals
   attr_accessor :context
+  attr_accessor :source
 
-  # options: :context, :locals, :parent
+  # options: :context, :locals, :parent, :source
   def initialize(options={})
     @context = options[:context] || Object.new_root_object
     @locals = Hash.new options[:locals]
     @parent = options[:parent]
+    @source = options[:source]
+  end
+
+  def source_trace
+    case source
+    when ::String
+      source
+    when nil
+      "(missing source info)"
+    else
+      source.source_ref(context)
+    end
   end
 
   def context
@@ -59,25 +72,27 @@ end
 
 class Stack
   def top_stack_frame
-    @top_stack_frame ||= StackFrame.new
+    @top_stack_frame ||= StackFrame.new :source => "(root stack frame)"
   end
 
-  attr_reader :root, :symbols, :parser, :includes
+  attr_reader :root, :symbols, :includes, :stack
 
   def initialize
     @root = top_stack_frame.context
     @symbols = {}
-    @parser = River::Parser.new
     @includes = {}
+    @stack = [top_stack_frame]
   end
 
-  def river_include(filename)
-    filename = File.expand_path(filename)
+
+  def river_include(raw_filename)
+    filename = File.expand_path(raw_filename)
     filename += ".river" unless filename[/\.river$/]
     return nil if @includes[filename]
     raise "include file does not exist: #{filename}" unless File.exists?(filename)
 
     src = File.read filename
+    parser = River::Parser.new :source_file => raw_filename
     parsed = parser.parse src
 
     unless parsed
@@ -92,15 +107,20 @@ class Stack
     @includes[filename] = 1 # return a true value for river = any integer works
   end
 
-  # the stack consists of an array of hashs
-  # Each entry in the stack is a call-frame with a hash of local variable names
-  def stack; @stack ||= [top_stack_frame]; end
+  def backtrace
+    stack[1..-1].reverse.collect &:source_trace
+  end
+
+  def backtrace_sources
+    stack[1..-1].reverse.collect &:source
+  end
 
   def context; current_stack_frame.context; end
 
   def current_stack_frame; stack[-1]; end
 
   def push_stack_frame(stack_frame)
+    raise "no source" unless stack_frame.source
     stack << stack_frame
   end
 
@@ -108,8 +128,8 @@ class Stack
     stack.pop
   end
 
-  def raise(error_string)
-    puts "stack-trace for #{error_string}"
+  def river_raise(source, error_string)
+    puts error_string+"\n"+ BabelBridge::Tools.uniform_tabs((["  "+source.source_ref]+backtrace).join("\n  "))
     raise Error.new(error_string)
   end
 
