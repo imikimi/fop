@@ -20,6 +20,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'babel_bridge', '>= 0.5.0'
   gem.add_dependency 'trollop'
   gem.add_dependency 'json'
+  gem.add_development_dependency 'guard-rspec'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'rb-fsevent'
 end

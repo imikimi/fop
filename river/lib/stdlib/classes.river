@@ -53,5 +53,7 @@ end
 end
 
 def class(name,block)
-  classes.get_class(name).prototype.eval block
+  classes.get_class(name).tap_eval do
+    prototype.eval block
+  end
 end

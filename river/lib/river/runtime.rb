@@ -1,6 +1,9 @@
 module River
 module Runtime
 
+class Error < Exception
+end
+
 class Tests
   class << self
     def validate_parameters(parameters, length_or_types, info='')
@@ -103,6 +106,11 @@ class Stack
 
   def pop_stack_frame
     stack.pop
+  end
+
+  def raise(error_string)
+    puts "stack-trace for #{error_string}"
+    raise Error.new(error_string)
   end
 
   def in(stack_frame)

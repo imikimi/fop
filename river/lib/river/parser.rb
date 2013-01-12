@@ -59,9 +59,6 @@ class Parser < BabelBridge::Parser
   end
 
   rule :method_invocation_chain, :operand
-
-  rule :end_statement, /([\t ]*[;\n])+[\t ]*/
-
   rule :operand, :function_definition
   rule :operand, :if_statement
   rule :operand, :while_statement
@@ -152,6 +149,8 @@ class Parser < BabelBridge::Parser
   rule :literal, :integer
   rule :literal, :symbol
   rule :literal, :string
+
+  rule :end_statement, :space?, many(/[;\n]/, :space?), :space?, :delimiter => //
 
   rule :space, many(:space_or_comment), :delimiter => //
   rule :whitespace, many(:whitespace_or_comment), :delimiter => //
