@@ -40,7 +40,14 @@ ENDCODE
   end
 
   it "should work to eval on a non-root object" do
-    test_eval("obj=new;obj.eval do def foo; 123 end end;obj.foo").should==123
+    test_eval(<<ENDCODE).should==123
+obj=new
+obj.eval do
+  def foo; 123 end
+end
+def foo; 999 end
+obj.foo
+ENDCODE
   end
 
   it "set_method should work" do

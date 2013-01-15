@@ -1,4 +1,7 @@
 def attr_reader(name)
+  # TODO: the "do" block here will bind, in its closure, to the object that attr_reader was invoked on
+  # What we want is to "bind" the local "name" - kinda like a closure, but we want the "do" block to dynamically
+  # update its "context/self" to whatever object it was invoked on - like a normal method
   set_method name, do
     get_member name
   end
@@ -25,6 +28,8 @@ root_attr_reader :class_instance_prototype
   attr_reader :name
   attr_reader :prototype
 
+  @name = "class_prototype"
+
   def create_prototype(klass)
     class_prototype.new.tap_eval do
       @class = klass
@@ -45,14 +50,15 @@ end
 
   def new_class(name)
     attr_reader name
-    set_member name, class_prototype.new.tap_eval do
+    set_member(name, (a = class_prototype.new).tap_eval(do
       @name = name
       @prototype = class_instance_prototype.new
-    end
+    end))
+    a
   end
 end
 
-def class(name,block)
+def class(name, block)
   classes.get_class(name).tap_eval do
     prototype.eval block
   end

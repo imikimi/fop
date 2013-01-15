@@ -10,9 +10,9 @@ class Object
         o.set_method(:new) {|runtime,context,params| context.new}
         o.set_method(:debug) {|runtime,context,params| puts params.collect{|a| a.inspect}.join(', ')} # temporary implementation for debugging
         o.set_method(:eval) do |runtime,context,params|
-          River::Runtime::Tests.validate_parameters(params,1)
+          River::Runtime::Tests.validate_parameters params, [Runtime::Proc], "method = eval"
           block = params[0]
-          block.invoke_in context, runtime, :call, [], nil
+          block.call runtime, context, []
         end
 
         o.set_method(:set_method) do |runtime,context,params|
@@ -124,15 +124,17 @@ class Proc < Object
     super parent
     @block = block
     @closure = closure
-    set_method(:call) {|runtime, context, params| call runtime, context, params}
+    set_method(:call) do |runtime, context, params|
+      if @closure
+        @block.invoke runtime, @closure.context, params, @closure
+      else
+        @block.invoke runtime, context, params
+      end
+    end
   end
 
   def call(runtime, context, params)
-    if @closure
-      @block.invoke runtime, @closure.context, params, @closure
-    else
-      @block.invoke runtime, context, params
-    end
+    @block.invoke runtime, context, params, @closure
   end
 end
 
