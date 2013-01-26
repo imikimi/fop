@@ -30,6 +30,7 @@ class ModelNode
   def source_line; parse_node.line; end
   def source_column; parse_node.column; end
   def source_file; parse_node.source_file; end
+  def relative_source_file; parse_node.relative_source_file; end
 
   def source_loc; "(#{source_line},#{source_column})" end
 
@@ -45,7 +46,7 @@ class ModelNode
   end
 
   def source_ref(current_self=nil)
-    "#{source_file}\t(#{source_line}:\t#{source_column})\t #{self.class.short_name}#{"(#{name.inspect})" if name}\t #{"self:#{current_self.inspect}" if current_self}"
+    "#{relative_source_file}\t(#{source_line}:\t#{source_column})\t #{self.class.short_name}#{"(#{name.inspect})" if name}\t #{"self:#{current_self.inspect}" if current_self}"
   end
 
   # output parsable source-code
@@ -381,7 +382,7 @@ end
 
 class String < Constant
   def evaluate(runtime)
-    runtime.root.new(value)
+    runtime.root.derive(value)
   end
 end
 

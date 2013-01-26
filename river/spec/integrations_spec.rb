@@ -32,7 +32,7 @@ ENDCODE
 
   it "complex test" do
     test_eval(<<ENDCODE).should == 120
-      point = new
+      point = derive
       point.eval do
         @x = @y = 0
         def x; @x end
@@ -50,8 +50,8 @@ ENDCODE
 
   it "linked list test" do
     code = (<<ENDCODE)
-      @linked_list = new
-      @linked_list_node = new
+      @linked_list = derive
+      @linked_list_node = derive
 
       root.eval do
         def linked_list; @linked_list; end
@@ -71,9 +71,9 @@ ENDCODE
 
         def add(value)
           if @tail
-            @tail = @tail.set_next root.linked_list_node.new
+            @tail = @tail.set_next root.linked_list_node.derive
           else
-            @head = @tail = root.linked_list_node.new
+            @head = @tail = root.linked_list_node.derive
           end
           @tail.set_value value
         end
@@ -88,7 +88,7 @@ ENDCODE
         end
       end
 
-      my_ll = root.linked_list.new
+      my_ll = root.linked_list.derive
       my_ll.add 2
       my_ll.add 5
       my_ll.add 12

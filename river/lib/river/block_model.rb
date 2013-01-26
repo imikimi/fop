@@ -77,7 +77,7 @@ class FunctionDefinition < Block
   end
 
   def evaluate(runtime)
-    proc = runtime.root.new self
+    proc = runtime.root.derive self
     runtime.context.set_method(name,proc)
     proc
   end
@@ -104,7 +104,7 @@ class DoBlock < Block
 
   def evaluate(runtime)
     closure = runtime.current_stack_frame
-    runtime.root.new self, closure
+    runtime.root.derive self, closure
   end
 end
 

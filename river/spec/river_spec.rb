@@ -100,7 +100,7 @@ describe "basic OO features" do
   end
 
   it "create new objects" do
-    test_eval("new").class.should == River::Runtime::Object
+    test_eval("derive").class.should == River::Runtime::Object
   end
 end
 

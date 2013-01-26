@@ -1,0 +1,42 @@
+require "classes"
+
+class :LinkedListNode, do
+  def next; @next end
+  def value; @value end
+  def next=(n); @next = n end
+  def value=(v); @value = v end
+end
+
+class :LinkedList, do
+  def head; @head end
+  def tail; @tail end
+
+  def add(value)
+    if @tail
+      @tail = @tail.next = root.LinkedListNode.new
+    else
+      @head = @tail = root.LinkedListNode.new
+    end
+    @tail.value = value
+  end
+
+  def each(block)
+    current = @head
+    while current
+      block.call current.value
+      current = current.next
+    end
+    self
+  end
+end
+
+my_ll = root.LinkedListNode.new
+my_ll.add 2
+my_ll.add 5
+my_ll.add 12
+
+product = 1
+my_ll.each do |el|
+  product = product * el
+end
+debug product

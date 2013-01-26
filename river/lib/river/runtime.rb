@@ -85,26 +85,32 @@ class Stack
   end
 
 
-  def river_include(raw_filename)
-    filename = File.expand_path(raw_filename)
+  def load_and_eval(raw_filename)
+    paths = [".", File.join(River::SRC_ROOT,"lib","stdlib")]
+    filename = raw_filename
     filename += ".river" unless filename[/\.river$/]
-    return nil if @includes[filename]
-    raise "include file does not exist: #{filename}" unless File.exists?(filename)
+    path_and_filename = nil
+    paths.each do |path|
+      path_and_filename = File.expand_path(File.join(path,filename))
+      break if File.exist?(path_and_filename)
+    end
+    return nil if @includes[path_and_filename]
+    raise "include file does not exist: #{raw_filename} (include paths: #{paths.inspect}" unless File.exists?(path_and_filename)
 
-    src = File.read filename
-    parser = River::Parser.new :source_file => raw_filename
+    src = File.read path_and_filename
+    parser = River::Parser.new :source_file => path_and_filename
     parsed = parser.parse src
 
     unless parsed
-      $stderr.puts "Parsing failed on file: #{filename}"
+      $stderr.puts "Parsing failed on file: #{path_and_filename}"
       $stderr.puts parser.parser_failure_info
-      raise "included file #{filename.inspect} failed to parse"
+      raise "included file #{path_and_filename.inspect} failed to parse"
     end
 
     model = parsed.to_model
     model.evaluate self
 
-    @includes[filename] = 1 # return a true value for river = any integer works
+    @includes[path_and_filename] = 1 # return a true value for river = any integer works
   end
 
   def backtrace
@@ -141,7 +147,7 @@ class Stack
   end
 
   def get_symbol(symbol)
-    symbols[symbol]||=root.new symbol
+    symbols[symbol]||=root.derive symbol
   end
 
   def in_context(new_context)

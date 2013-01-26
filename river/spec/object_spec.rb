@@ -41,7 +41,7 @@ ENDCODE
 
   it "should work to eval on a non-root object" do
     test_eval(<<ENDCODE).should==123
-obj=new
+obj=derive
 obj.eval do
   def foo; 123 end
 end
@@ -91,6 +91,19 @@ ENDCODE
 
   it "string should work" do
     test_eval('"string"').ruby_object.should == "string"
+  end
+
+  it "prototyping" do
+    test_eval(<<ENDCODE).should == 120
+      o1 = derive
+      o1.eval do
+        def bar
+          120
+        end
+      end
+      o2 = o1.derive
+      o2.bar
+ENDCODE
   end
 
 end

@@ -20,46 +20,54 @@ def tap_eval(block)
   self
 end
 
-root_attr_reader :class_prototype
-root_attr_reader :classes
-root_attr_reader :class_instance_prototype
+root_attr_reader :ClassPrototype
+root_attr_reader :Classes
+root_attr_reader :ClassInstancePrototype
 
-@class_prototype = new.tap_eval do
+@ClassPrototype = derive.tap_eval do
   attr_reader :name
   attr_reader :prototype
 
-  @name = "class_prototype"
+  @name = "ClassPrototype"
 
-  def create_prototype(klass)
-    class_prototype.new.tap_eval do
-      @class = klass
+  def create_prototype
+    klass = self
+    ClassInstancePrototype.derive.tap_eval do
+      @class = self
     end
+  end
+
+  def prototype
+    @prototype = @prototype || create_prototype
+  end
+
+  def new
+    prototype.derive
   end
 end
 
-@class_instance_prototype = new.tap_eval do
+@ClassInstancePrototype = derive.tap_eval do
   def class
     @class || super
   end
 end
 
-@classes = new.tap_eval do
+@Classes = derive.tap_eval do
   def get_class(name)
-    get_member(name) || new_class(name)
+    get_member(name) || derive_class(name)
   end
 
-  def new_class(name)
+  def derive_class(name)
     attr_reader name
-    set_member(name, (a = class_prototype.new).tap_eval(do
+    set_member name, ClassPrototype.derive.tap_eval(do
       @name = name
-      @prototype = class_instance_prototype.new
-    end))
-    a
+      @prototype = ClassInstancePrototype.derive
+    end)
   end
 end
 
 def class(name, block)
-  classes.get_class(name).tap_eval do
+  Classes.get_class(name).tap_eval do
     prototype.eval block
   end
 end

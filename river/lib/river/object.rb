@@ -7,7 +7,7 @@ class Object
   class << self
     def new_root_object
       Object.new.tap do |o|
-        o.set_method(:new) {|runtime,context,params| context.new}
+        o.set_method(:derive) {|runtime,context,params| context.derive}
         o.set_method(:debug) {|runtime,context,params| puts params.collect{|a| a.inspect}.join(', ')} # temporary implementation for debugging
         o.set_method(:eval) do |runtime,context,params|
           River::Runtime::Tests.validate_parameters params, [Runtime::Proc], "method = eval"
@@ -38,7 +38,7 @@ class Object
 
         o.set_method(:require) do  |runtime,context,params|
           River::Runtime::Tests.validate_parameters params, [Runtime::String], "method = require"
-          runtime.river_include params[0].ruby_object
+          runtime.load_and_eval params[0].ruby_object
         end
       end
     end
@@ -48,7 +48,7 @@ class Object
     self.parent=_parent
   end
 
-  def new(*args)
+  def derive(*args)
     case args[0]
     when Model::Block then Runtime::Proc
     when ::String then Runtime::String
@@ -100,7 +100,7 @@ class Object
   end
 
   def inspect
-    "<#{self.class}:#{self.object_id}>"
+    "<RiverObj:#{self.object_id} members:(#{mmembers.keys.join(', ')}) methods:(#{mmethods.keys.join(', ')})>"
   end
 
   def invoke(runtime, method_name, params, invoking_model)
@@ -108,11 +108,11 @@ class Object
   end
 
   def invoke_in(context, runtime, method_name, params, invoking_model)
-    method = find_method method_name
+    method = context.find_method method_name
     if method
       method.call runtime, context, params
     else
-      runtime.river_raise invoking_model, "local or method #{method_name.inspect} not found"
+      runtime.river_raise invoking_model, "local or method #{method_name.inspect} not found (context = #{context.inspect}) (context.parent = #{context.parent.inspect})"
     end
   end
 end
